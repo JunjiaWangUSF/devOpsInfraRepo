@@ -55,7 +55,7 @@ jobs:
         run: docker-compose logs backend
 
       - name: query databse
-        run: docker exec devopsinfrarepo_mysql_1 mysql -h localhost -P 3306 -u root -ppassword -e "USE weightTracker; SELECT * FROM weights;"
+        run: docker exec devopsinfrarepo_mysql_1 mysql -h mysql -P 3306 -u root -ppassword -e "USE weightTracker; SELECT * FROM weights;"
 
       - name: Run tests
         run: docker-compose exec -T devopsinfrarepo_backend_1 npm run test
