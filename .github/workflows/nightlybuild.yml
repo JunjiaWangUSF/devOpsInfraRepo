@@ -58,7 +58,7 @@ jobs:
           DB_PASSWORD: password
           DB_DATABASE: weightTracker
           DB_PORT: 3306
-        run: docker-compose exec -T devopsinfrarepo_backend_1 npm run test -- --verbose
+        run: docker exec devopsinfrarepo_backend_1 npm test
 
       - name: Stop services
         run: docker-compose down
