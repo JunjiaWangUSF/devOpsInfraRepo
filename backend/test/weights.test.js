@@ -1,7 +1,8 @@
 import request from "supertest";
-import server from "../src/app.js"; // Make sure t his is the correct path and export
+import server from "../src/app.js";
 
 describe("Database Operations", () => {
+  // Your test cases
   test("should retrieve mock data from the database", async () => {
     const response = await request(server).get("/weights/test");
     expect(response.statusCode).toBe(200);
@@ -11,5 +12,9 @@ describe("Database Operations", () => {
       (entry) => entry.username === "test"
     );
     expect(weightEntry).toBeDefined();
+  });
+
+  afterAll((done) => {
+    server.close(done);
   });
 });
