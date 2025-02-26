@@ -49,7 +49,7 @@ jobs:
         run: docker-compose up -d
 
       - name: Run tests
-        run: docker-compose run backend npm test
+        run: docker-compose exec backend npm run test
 
       - name: Stop services
         run: docker-compose down
