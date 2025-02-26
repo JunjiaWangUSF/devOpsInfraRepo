@@ -48,6 +48,12 @@ jobs:
       - name: Start services
         run: docker-compose up -d
 
+      - name: Check service status
+        run: docker-compose ps
+
+      - name: Capture backend logs
+        run: docker-compose logs backend
+
       - name: Run tests
         run: docker-compose exec -T backend npm run test
 
