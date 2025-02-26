@@ -55,7 +55,7 @@ jobs:
         run: docker-compose logs backend
 
       - name: Check database data
-        run: docker exec -T devopsinfrarepo_mysql_1 mysql -u root -ppassword -e "USE weightTracker; SELECT * FROM weights;"
+        run: docker-compose exec -T devopsinfrarepo_mysql_1 mysql -u root -ppassword -e "USE weightTracker; SELECT * FROM weights;"
 
       - name: Run tests
         run: docker-compose exec -T backend npm run test
