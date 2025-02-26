@@ -1,0 +1,49 @@
+name: Nightly Build
+
+on:
+  schedule:
+    - cron: "0 0 * * *" # Runs every day at midnight
+  push:
+    branches:
+      - main
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Log in to Amazon ECR
+        id: login-ecr
+        run: |
+          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+
+      - name: Build Docker image
+        run: docker-compose build backend
+
+      - name: Start services
+        run: docker-compose up -d
+
+      - name: Run tests
+        run: docker-compose run backend npm test
+
+      - name: Stop services
+        run: docker-compose down
+
+      - name: If success, build, tag, and push image to Amazon ECR
+        if: success()
+        run: |
+          docker build -t my-app-image:latest .
+          docker tag my-app-image:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/infrarepo:latest
+          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/infrarepo:latest
+
+      - name: Clean up
+        if: always()
+        run: docker-compose down
