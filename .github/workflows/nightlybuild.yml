@@ -40,11 +40,7 @@ jobs:
         run: docker-compose up -d
 
       - name: Wait for MySQL to be ready
-        run: |
-          until docker-compose exec mysql mysqladmin --user=root --password=password ping --silent; do
-            echo 'Waiting for MySQL to be ready...'
-            sleep 2
-          done
+        run: sleep 20
 
       - name: Check service status
         run: docker-compose ps
