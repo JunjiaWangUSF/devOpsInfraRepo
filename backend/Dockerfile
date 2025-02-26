@@ -9,6 +9,7 @@ RUN npm install
 
 # Copy the entire contents of the src and test directories to the container
 COPY src/ ./src/
+
 COPY test/ ./test/
 
 # Expose the port the app runs on
