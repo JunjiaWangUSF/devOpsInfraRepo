@@ -54,7 +54,8 @@ app.get("/weights/test", (req, res) => {
   const sql = `SELECT * FROM weights`;
   pool.query(sql, (err, results) => {
     if (err) {
-      res.status(400).send("Error retrieving weights");
+      console.error("Database query error:", err);
+      res.status(500).send("Error retrieving weights");
       return;
     }
     res.json(results);

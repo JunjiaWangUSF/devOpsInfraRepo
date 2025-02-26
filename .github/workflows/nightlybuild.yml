@@ -54,8 +54,11 @@ jobs:
       - name: Capture backend logs
         run: docker-compose logs backend
 
+      - name: query databse
+        run: docker exec devopsinfrarepo_mysql_1  mysql -uroot -ppassword -e "USE weightTracker; SELECT * FROM weights;"
+
       - name: Run tests
-        run: docker-compose exec -T backend npm run test
+        run: docker-compose exec -T devopsinfrarepo_backend_1 npm run test
 
       - name: Stop services
         run: docker-compose down
