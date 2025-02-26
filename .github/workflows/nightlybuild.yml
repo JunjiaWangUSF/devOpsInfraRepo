@@ -40,7 +40,11 @@ jobs:
         run: docker-compose up -d
 
       - name: Wait for MySQL to be ready
-        run: sleep 30
+        run: |
+          until docker-compose exec mysql mysqladmin --user=root --password=password ping --silent; do
+            echo 'Waiting for MySQL to be ready...'
+            sleep 2
+          done
 
       - name: Check service status
         run: docker-compose ps
@@ -52,7 +56,13 @@ jobs:
         run: docker exec devopsinfrarepo_mysql_1 mysql -h mysql -P 3306 -u root -ppassword -e "USE weightTracker; SELECT * FROM weights;"
 
       - name: Run tests
-        run: docker-compose exec -T devopsinfrarepo_backend_1 npm run test
+        env:
+          DB_HOST: mysql
+          DB_USER: root
+          DB_PASSWORD: password
+          DB_DATABASE: weightTracker
+          DB_PORT: 3306
+        run: docker-compose exec -T devopsinfrarepo_backend_1 npm run test -- --verbose
 
       - name: Stop services
         run: docker-compose down
