@@ -11,11 +11,11 @@ services:
     ports:
       - "8000:8000"
     environment:
-      DB_HOST: mysql # Name of the MySQL service in docker-compose
-      DB_USER: root # As defined in the MySQL service configuration
-      DB_PASSWORD: password # As defined in the MySQL service configuration
-      DB_DATABASE: weightTracker # As defined in the MySQL service configuration
-      DB_PORT: 3306 # Standard MySQL port
+      DB_HOST: mysql
+      DB_USER: root
+      DB_PASSWORD: password
+      DB_DATABASE: weightTracker
+      DB_PORT: 3306
     depends_on:
       - mysql
 
@@ -27,3 +27,8 @@ services:
       - "3307:3306"
     volumes:
       - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
