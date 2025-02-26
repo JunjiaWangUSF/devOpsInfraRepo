@@ -62,11 +62,12 @@ app.get("/weights/test", (req, res) => {
   });
 });
 
+let server;
 // Check if the module is being required elsewhere or run directly
 if (import.meta.url === `file://${process.argv[1]}`) {
-  app.listen(port, () => {
+  server = app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
   });
 }
 
-export default app;
+export { app, server, pool };
