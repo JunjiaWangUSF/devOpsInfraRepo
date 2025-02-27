@@ -64,8 +64,6 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: ${{ secrets.AWS_REGION }}
-          role-to-assume: arn:aws:iam::377816764053:role/LabRole
-          role-skip-session-tagging: true # Disable session tagging
 
       - name: Log in to Amazon ECR
         run: |
