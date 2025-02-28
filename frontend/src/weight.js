@@ -31,7 +31,7 @@ function WeightTracker() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const encodedUsername = encodeURIComponent(username);
-    await axios.post("http://host.docker.internal:8000/weight", {
+    await axios.post("/api/weight", {
       username,
       weight,
       date,
@@ -40,9 +40,7 @@ function WeightTracker() {
   };
 
   const fetchWeights = async (encodedUsername) => {
-    const response = await axios.get(
-      `http://host.docker.internal:8000/weights/${encodedUsername}`
-    );
+    const response = await axios.get(`/api/weights/${encodedUsername}`);
     setWeights(response.data);
   };
 
