@@ -1,34 +1,41 @@
 import express from "express";
 import mysql from "mysql2";
-import cors from "cors";
-import https from "https";
-import fs from "fs";
 
+import cors from "cors";
 const app = express();
 const port = process.env.PORT || 8000;
 
+// Enable CORS for all routes
 app.use(cors());
+// Add middleware for parsing JSON
 app.use(express.json());
 
+// Setup database connection from environment variables
 const pool = mysql.createPool({
   connectionLimit: 10,
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_DATABASE,
-  port: process.env.DB_PORT || 3306,
+  host: process.env.DB_HOST, // Environment variable for database host
+  user: process.env.DB_USER, // Environment variable for database user
+  password: process.env.DB_PASSWORD, // Environment variable for database password
+  database: process.env.DB_DATABASE, // Environment variable for database name
+  port: process.env.DB_PORT || 3306, // Default to 3306 if not specified
 });
 
 app.post("/weight", (req, res) => {
   const { username, weight, date } = req.body;
-  const sql = `INSERT INTO weights (username, weight, date) VALUES (?, ?, ?)`;
-  pool.query(sql, [username, weight, date], (err, result) => {
-    if (err) {
-      res.status(500).send("Error adding weight entry");
-      return;
-    }
-    res.send("Weight added successfully!");
-  });
+  console.log(username, weight, date);
+  try {
+    const sql = `INSERT INTO weights (username, weight, date) VALUES (?, ?, ?)`;
+    pool.query(sql, [username, weight, date], (err, result) => {
+      if (err) {
+        res.status(500).send("Error adding weight entry");
+        return;
+      }
+      res.send("Weight added successfully!");
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Error adding weight entry");
+  }
 });
 
 app.get("/weights/:username", (req, res) => {
@@ -55,19 +62,11 @@ app.get("/weights/test", (req, res) => {
   });
 });
 
-// SSL/TLS Certificate and Key Paths
-const key = fs.readFileSync("./server.key", "utf8");
-const cert = fs.readFileSync("./server.cert", "utf8");
-
-const httpsOptions = {
-  key: key,
-  cert: cert,
-};
-
 let server;
+// Check if the module is being required elsewhere or run directly
 if (import.meta.url === `file://${process.argv[1]}`) {
-  server = https.createServer(httpsOptions, app).listen(port, () => {
-    console.log(`Server is running on HTTPS at port ${port}`);
+  server = app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
   });
 }
 
