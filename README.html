@@ -1,0 +1,398 @@
+<!DOCTYPE html><html><head>
+      <title>README</title>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      
+      <link rel="stylesheet" href="file:///c:\Users\will\.vscode\extensions\shd101wyy.markdown-preview-enhanced-0.8.15\crossnote\dependencies\katex\katex.min.css">
+      
+      
+      
+      
+      
+      <style>
+      code[class*=language-],pre[class*=language-]{color:#333;background:0 0;font-family:Consolas,"Liberation Mono",Menlo,Courier,monospace;text-align:left;white-space:pre;word-spacing:normal;word-break:normal;word-wrap:normal;line-height:1.4;-moz-tab-size:8;-o-tab-size:8;tab-size:8;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none}pre[class*=language-]{padding:.8em;overflow:auto;border-radius:3px;background:#f5f5f5}:not(pre)>code[class*=language-]{padding:.1em;border-radius:.3em;white-space:normal;background:#f5f5f5}.token.blockquote,.token.comment{color:#969896}.token.cdata{color:#183691}.token.doctype,.token.macro.property,.token.punctuation,.token.variable{color:#333}.token.builtin,.token.important,.token.keyword,.token.operator,.token.rule{color:#a71d5d}.token.attr-value,.token.regex,.token.string,.token.url{color:#183691}.token.atrule,.token.boolean,.token.code,.token.command,.token.constant,.token.entity,.token.number,.token.property,.token.symbol{color:#0086b3}.token.prolog,.token.selector,.token.tag{color:#63a35c}.token.attr-name,.token.class,.token.class-name,.token.function,.token.id,.token.namespace,.token.pseudo-class,.token.pseudo-element,.token.url-reference .token.variable{color:#795da3}.token.entity{cursor:help}.token.title,.token.title .token.punctuation{font-weight:700;color:#1d3e81}.token.list{color:#ed6a43}.token.inserted{background-color:#eaffea;color:#55a532}.token.deleted{background-color:#ffecec;color:#bd2c00}.token.bold{font-weight:700}.token.italic{font-style:italic}.language-json .token.property{color:#183691}.language-markup .token.tag .token.punctuation{color:#333}.language-css .token.function,code.language-css{color:#0086b3}.language-yaml .token.atrule{color:#63a35c}code.language-yaml{color:#183691}.language-ruby .token.function{color:#333}.language-markdown .token.url{color:#795da3}.language-makefile .token.symbol{color:#795da3}.language-makefile .token.variable{color:#183691}.language-makefile .token.builtin{color:#0086b3}.language-bash .token.keyword{color:#0086b3}pre[data-line]{position:relative;padding:1em 0 1em 3em}pre[data-line] .line-highlight-wrapper{position:absolute;top:0;left:0;background-color:transparent;display:block;width:100%}pre[data-line] .line-highlight{position:absolute;left:0;right:0;padding:inherit 0;margin-top:1em;background:hsla(24,20%,50%,.08);background:linear-gradient(to right,hsla(24,20%,50%,.1) 70%,hsla(24,20%,50%,0));pointer-events:none;line-height:inherit;white-space:pre}pre[data-line] .line-highlight:before,pre[data-line] .line-highlight[data-end]:after{content:attr(data-start);position:absolute;top:.4em;left:.6em;min-width:1em;padding:0 .5em;background-color:hsla(24,20%,50%,.4);color:#f4f1ef;font:bold 65%/1.5 sans-serif;text-align:center;vertical-align:.3em;border-radius:999px;text-shadow:none;box-shadow:0 1px #fff}pre[data-line] .line-highlight[data-end]:after{content:attr(data-end);top:auto;bottom:.4em}html body{font-family:'Helvetica Neue',Helvetica,'Segoe UI',Arial,freesans,sans-serif;font-size:16px;line-height:1.6;color:#333;background-color:#fff;overflow:initial;box-sizing:border-box;word-wrap:break-word}html body>:first-child{margin-top:0}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{line-height:1.2;margin-top:1em;margin-bottom:16px;color:#000}html body h1{font-size:2.25em;font-weight:300;padding-bottom:.3em}html body h2{font-size:1.75em;font-weight:400;padding-bottom:.3em}html body h3{font-size:1.5em;font-weight:500}html body h4{font-size:1.25em;font-weight:600}html body h5{font-size:1.1em;font-weight:600}html body h6{font-size:1em;font-weight:600}html body h1,html body h2,html body h3,html body h4,html body h5{font-weight:600}html body h5{font-size:1em}html body h6{color:#5c5c5c}html body strong{color:#000}html body del{color:#5c5c5c}html body a:not([href]){color:inherit;text-decoration:none}html body a{color:#08c;text-decoration:none}html body a:hover{color:#00a3f5;text-decoration:none}html body img{max-width:100%}html body>p{margin-top:0;margin-bottom:16px;word-wrap:break-word}html body>ol,html body>ul{margin-bottom:16px}html body ol,html body ul{padding-left:2em}html body ol.no-list,html body ul.no-list{padding:0;list-style-type:none}html body ol ol,html body ol ul,html body ul ol,html body ul ul{margin-top:0;margin-bottom:0}html body li{margin-bottom:0}html body li.task-list-item{list-style:none}html body li>p{margin-top:0;margin-bottom:0}html body .task-list-item-checkbox{margin:0 .2em .25em -1.8em;vertical-align:middle}html body .task-list-item-checkbox:hover{cursor:pointer}html body blockquote{margin:16px 0;font-size:inherit;padding:0 15px;color:#5c5c5c;background-color:#f0f0f0;border-left:4px solid #d6d6d6}html body blockquote>:first-child{margin-top:0}html body blockquote>:last-child{margin-bottom:0}html body hr{height:4px;margin:32px 0;background-color:#d6d6d6;border:0 none}html body table{margin:10px 0 15px 0;border-collapse:collapse;border-spacing:0;display:block;width:100%;overflow:auto;word-break:normal;word-break:keep-all}html body table th{font-weight:700;color:#000}html body table td,html body table th{border:1px solid #d6d6d6;padding:6px 13px}html body dl{padding:0}html body dl dt{padding:0;margin-top:16px;font-size:1em;font-style:italic;font-weight:700}html body dl dd{padding:0 16px;margin-bottom:16px}html body code{font-family:Menlo,Monaco,Consolas,'Courier New',monospace;font-size:.85em;color:#000;background-color:#f0f0f0;border-radius:3px;padding:.2em 0}html body code::after,html body code::before{letter-spacing:-.2em;content:'\00a0'}html body pre>code{padding:0;margin:0;word-break:normal;white-space:pre;background:0 0;border:0}html body .highlight{margin-bottom:16px}html body .highlight pre,html body pre{padding:1em;overflow:auto;line-height:1.45;border:#d6d6d6;border-radius:3px}html body .highlight pre{margin-bottom:0;word-break:normal}html body pre code,html body pre tt{display:inline;max-width:initial;padding:0;margin:0;overflow:initial;line-height:inherit;word-wrap:normal;background-color:transparent;border:0}html body pre code:after,html body pre code:before,html body pre tt:after,html body pre tt:before{content:normal}html body blockquote,html body dl,html body ol,html body p,html body pre,html body ul{margin-top:0;margin-bottom:16px}html body kbd{color:#000;border:1px solid #d6d6d6;border-bottom:2px solid #c7c7c7;padding:2px 4px;background-color:#f0f0f0;border-radius:3px}@media print{html body{background-color:#fff}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{color:#000;page-break-after:avoid}html body blockquote{color:#5c5c5c}html body pre{page-break-inside:avoid}html body table{display:table}html body img{display:block;max-width:100%;max-height:100%}html body code,html body pre{word-wrap:break-word;white-space:pre}}.markdown-preview{width:100%;height:100%;box-sizing:border-box}.markdown-preview ul{list-style:disc}.markdown-preview ul ul{list-style:circle}.markdown-preview ul ul ul{list-style:square}.markdown-preview ol{list-style:decimal}.markdown-preview ol ol,.markdown-preview ul ol{list-style-type:lower-roman}.markdown-preview ol ol ol,.markdown-preview ol ul ol,.markdown-preview ul ol ol,.markdown-preview ul ul ol{list-style-type:lower-alpha}.markdown-preview .newpage,.markdown-preview .pagebreak{page-break-before:always}.markdown-preview pre.line-numbers{position:relative;padding-left:3.8em;counter-reset:linenumber}.markdown-preview pre.line-numbers>code{position:relative}.markdown-preview pre.line-numbers .line-numbers-rows{position:absolute;pointer-events:none;top:1em;font-size:100%;left:0;width:3em;letter-spacing:-1px;border-right:1px solid #999;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.markdown-preview pre.line-numbers .line-numbers-rows>span{pointer-events:none;display:block;counter-increment:linenumber}.markdown-preview pre.line-numbers .line-numbers-rows>span:before{content:counter(linenumber);color:#999;display:block;padding-right:.8em;text-align:right}.markdown-preview .mathjax-exps .MathJax_Display{text-align:center!important}.markdown-preview:not([data-for=preview]) .code-chunk .code-chunk-btn-group{display:none}.markdown-preview:not([data-for=preview]) .code-chunk .status{display:none}.markdown-preview:not([data-for=preview]) .code-chunk .output-div{margin-bottom:16px}.markdown-preview .md-toc{padding:0}.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link{display:inline;padding:.25rem 0}.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link div,.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link p{display:inline}.markdown-preview .md-toc .md-toc-link-wrapper.highlighted .md-toc-link{font-weight:800}.scrollbar-style::-webkit-scrollbar{width:8px}.scrollbar-style::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}.scrollbar-style::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,.66);border:4px solid rgba(150,150,150,.66);background-clip:content-box}html body[for=html-export]:not([data-presentation-mode]){position:relative;width:100%;height:100%;top:0;left:0;margin:0;padding:0;overflow:auto}html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{position:relative;top:0;min-height:100vh}@media screen and (min-width:914px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{padding:2em calc(50% - 457px + 2em)}}@media screen and (max-width:914px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{font-size:14px!important;padding:1em}}@media print{html body[for=html-export]:not([data-presentation-mode]) #sidebar-toc-btn{display:none}}html body[for=html-export]:not([data-presentation-mode]) #sidebar-toc-btn{position:fixed;bottom:8px;left:8px;font-size:28px;cursor:pointer;color:inherit;z-index:99;width:32px;text-align:center;opacity:.4}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] #sidebar-toc-btn{opacity:1}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc{position:fixed;top:0;left:0;width:300px;height:100%;padding:32px 0 48px 0;font-size:14px;box-shadow:0 0 4px rgba(150,150,150,.33);box-sizing:border-box;overflow:auto;background-color:inherit}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar{width:8px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,.66);border:4px solid rgba(150,150,150,.66);background-clip:content-box}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc a{text-decoration:none}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc{padding:0 16px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link{display:inline;padding:.25rem 0}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link div,html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link p{display:inline}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper.highlighted .md-toc-link{font-weight:800}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{left:300px;width:calc(100% - 300px);padding:2em calc(50% - 457px - 300px / 2);margin:0;box-sizing:border-box}@media screen and (max-width:1274px){html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{width:100%}}html body[for=html-export]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .markdown-preview{left:50%;transform:translateX(-50%)}html body[for=html-export]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .md-sidebar-toc{display:none}
+/* Please visit the URL below for more information: */
+/*   https://shd101wyy.github.io/markdown-preview-enhanced/#/customize-css */
+
+      </style>
+      <!-- The content below will be included at the end of the <head> element. --><script type="text/javascript">
+  document.addEventListener("DOMContentLoaded", function () {
+    // your code here
+  });
+</script></head><body for="html-export">
+    
+    
+      <div class="crossnote markdown-preview  ">
+      
+<h3 id="source-repo">Source Repo: </h3>
+<p><a href="https://github.com/JunjiaWangUSF/devOpsSourceRepo">https://github.com/JunjiaWangUSF/devOpsSourceRepo</a></p>
+<h3 id="infrasturcue-repo">Infrasturcue Repo: </h3>
+<p><a href="https://github.com/JunjiaWangUSF/devOpsInfraRepo">https://github.com/JunjiaWangUSF/devOpsInfraRepo</a></p>
+<h3 id="abstraction">Abstraction </h3>
+<p>In this article, we will explore the process of building a small website, starting from local development and progressing to more complex deployment stages. Initially, we'll set up our development environment and create our website locally. Following this, we will implement a GitHub action and conduct connectivity tests to ensure that our Docker images are ready for further stages.</p>
+<p>We'll then introduce a nightly build process to simulate a real-world daily software cycle, providing continuous integration and helping catch issues early. Once our application is ready, we will deploy it to an Amazon EC2 instance. For web hosting, we'll use Nginx and integrate Route 53 for DNS management. We'll also secure a unique domain to give our website a professional touch. This approach offers a comprehensive overview of the website development lifecycle, from code creation to public release.</p>
+<h3 id="prerequisites">Prerequisites </h3>
+<ul>
+<li>Node</li>
+<li>Docker</li>
+<li>AWS account</li>
+<li>Domain name</li>
+<li>Github account</li>
+<li>AWS CLI</li>
+</ul>
+<h3 id="locally-build---source-repo">Locally build - Source Repo </h3>
+<p>More repo deatil in later section, we can give a first look on our project:</p>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>Docker compose up
+</code></pre><p>If you want to test seperately:</p>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>cd frontend
+npm test
+</code></pre><pre data-role="codeBlock" data-info="" class="language-text"><code>cd backend
+node index.js
+</code></pre><h4 id="running-results">Running results </h4>
+<p><img src="image.png" alt="alt text"></p>
+<ul>
+<li>This application can track users' weight by dates, key things to mentioned here, <strong>each user can only have one weight data per day</strong></li>
+</ul>
+<h2 id="nightly-build-and-push-images-to-aws-ecr---infrasturcue-repo">Nightly build and push images to AWS ECR - Infrasturcue Repo </h2>
+<h4 id="dockerized-our-frontend-and-backend">Dockerized our frontend and backend </h4>
+<p>backend: <a href="https://github.com/JunjiaWangUSF/devOpsInfraRepo/blob/main/backend/Dockerfile">https://github.com/JunjiaWangUSF/devOpsInfraRepo/blob/main/backend/Dockerfile</a></p>
+<p>frontend: <a href="https://github.com/JunjiaWangUSF/devOpsInfraRepo/blob/main/frontend/Dockerfile">https://github.com/JunjiaWangUSF/devOpsInfraRepo/blob/main/frontend/Dockerfile</a></p>
+<p>docker compose file: <a href="https://github.com/JunjiaWangUSF/devOpsInfraRepo/blob/main/docker-compose.yml">https://github.com/JunjiaWangUSF/devOpsInfraRepo/blob/main/docker-compose.yml</a></p>
+<ul>
+<li>Insert a dummy data when database initialized: <a href="https://github.com/JunjiaWangUSF/devOpsInfraRepo/blob/main/mysql/init.sql">https://github.com/JunjiaWangUSF/devOpsInfraRepo/blob/main/mysql/init.sql</a></li>
+<li>frontend running on port: 3000</li>
+<li>backend running on port: 8000</li>
+</ul>
+<p>example .env file: <a href="https://github.com/JunjiaWangUSF/devOpsInfraRepo/blob/main/example.env">https://github.com/JunjiaWangUSF/devOpsInfraRepo/blob/main/example.env</a></p>
+<p>Next, we will writing some tests to ensure our backend and Database connectivity.</p>
+<p>test file: <a href="https://github.com/JunjiaWangUSF/devOpsSourceRepo/blob/main/backend/test/weights.test.js">https://github.com/JunjiaWangUSF/devOpsSourceRepo/blob/main/backend/test/weights.test.js</a></p>
+<ul>
+<li>this test using Jtest to make real request to our backend server and backend will check response status and dummy data exist in our database.</li>
+</ul>
+<hr>
+<p><strong>Important Note</strong>: Since Docker operates on an isolated network, it's necessary to map the ports from the local machine to the container's ports. This ensures that requests to each endpoint can be properly directed and reached within the Docker environment. We also request a Mysql image on our locally testing enviroment, it is best practice to use envirment variables to connect our database, which can smooth switch between remote RDS and local DB.</p>
+<hr>
+<h2 id="github-action">Github Action </h2>
+<p><a href="https://github.com/JunjiaWangUSF/devOpsInfraRepo/blob/main/.github/workflows/nightlybuild.yml">https://github.com/JunjiaWangUSF/devOpsInfraRepo/blob/main/.github/workflows/nightlybuild.yml</a></p>
+<p>Next, we need to set up the necessary GitHub Action secrets to securely store sensitive information required by our workflows. Here’s how to configure these secrets:</p>
+<ul>
+<li>
+<p>Navigate to the GitHub Repository Settings: Go to the 'Settings' tab of your repository.</p>
+</li>
+<li>
+<p>Access the Secrets and Variables Section: Click on 'Secrets and Variables' to open the section where you can manage your repository secrets.</p>
+</li>
+<li>
+<p>Add New Repository Secret: Click on 'New repository secret' to begin adding each secret.</p>
+</li>
+</ul>
+<p>You'll need to configure the following secrets to ensure your GitHub Actions can interact with AWS services and your database securely:</p>
+<ul>
+<li><code>AWS_ACCESS_KEY_ID</code>: Your AWS access key for API requests authentication.</li>
+<li><code>AWS_ACCOUNT_ID</code>: The unique identifier of your AWS account.</li>
+<li><code>AWS_REGION</code>: The AWS region your services are hosted in.</li>
+<li><code>AWS_SECRET_ACCESS_KEY</code>: The secret key paired with your access key to authenticate requests.</li>
+<li><code>AWS_SESSION_TOKEN</code>: A token required if you are using temporary credentials.</li>
+<li><code>DB_DATABASE</code>: The name of your database.</li>
+<li><code>DB_HOST</code>: The hostname or IP address of your database server.</li>
+<li><code>DB_PASSWORD</code>: The password to connect to your database.</li>
+<li><code>DB_PORT</code>: The port number your database service is listening on.</li>
+<li><code>DB_USER</code>: The username used to connect to the database.</li>
+<li><code>MYSQL_ROOT_PASSWORD</code>: The root password for MySQL, if applicable.</li>
+</ul>
+<h4 id="github-action-1">Github Action </h4>
+<p>Next, you'll need to log in to your AWS account. Once logged in, use the search bar to find and select ECR (Elastic Container Registry). Here, you should create two repositories; name one frontend and the other backend to organize your container images accordingly.</p>
+<p><img src="image-1.png" alt="alt text"></p>
+<h2 id="nightly-build-github-actions-workflow-overview">Nightly Build GitHub Actions Workflow Overview </h2>
+<p>This GitHub Actions workflow is designed to automate the build, test, and deployment processes for a software project with both frontend and backend components. Here are the key steps involved:</p>
+<h5 id="trigger-events"><strong>Trigger Events</strong> </h5>
+<ul>
+<li><strong>Schedule</strong>: Executes daily at midnight.</li>
+<li><strong>Push</strong>: Activates on any push to the <code>main</code> branch.</li>
+</ul>
+<h5 id="environment-setup"><strong>Environment Setup</strong> </h5>
+<ul>
+<li><strong>Runner</strong>: Utilizes Ubuntu-latest.</li>
+<li><strong>Initial Setup</strong>: Checks out the code, sets up Docker Buildx, and installs Docker Compose.</li>
+</ul>
+<h5 id="service-initialization"><strong>Service Initialization</strong> </h5>
+<ul>
+<li><strong>Docker Compose</strong>: Starts up services using Docker Compose, with environment variables sourced from GitHub secrets for database connectivity.</li>
+</ul>
+<h5 id="operational-checks"><strong>Operational Checks</strong> </h5>
+<ul>
+<li><strong>Readiness Check</strong>: Ensures the MySQL database is ready for connections.</li>
+<li><strong>Service Status</strong>: Checks and logs the status of Docker services.</li>
+<li><strong>Log Capture</strong>: Captures and logs backend service output for diagnostics.</li>
+</ul>
+<h5 id="database-interaction"><strong>Database Interaction</strong> </h5>
+<ul>
+<li><strong>SQL Query</strong>: Executes a direct SQL query to verify database interaction.</li>
+</ul>
+<h5 id="testing"><strong>Testing</strong> </h5>
+<ul>
+<li><strong>Run Tests</strong>: Executes tests within the backend service container to validate application functionality.</li>
+</ul>
+<h5 id="aws-configuration-and-ecr"><strong>AWS Configuration and ECR</strong> </h5>
+<ul>
+<li><strong>AWS Login</strong>: Configures AWS credentials and logs into Amazon ECR.</li>
+</ul>
+<h5 id="image-building-and-pushing"><strong>Image Building and Pushing</strong> </h5>
+<ul>
+<li><strong>Backend and Frontend</strong>: Builds and pushes Docker images for both frontend and backend to Amazon ECR.</li>
+</ul>
+<h5 id="cleanup"><strong>Cleanup</strong> </h5>
+<ul>
+<li><strong>Resource Management</strong>: Ensures all Docker containers are properly shut down and cleaned up post-execution.</li>
+</ul>
+<p>If workflow runs correctly, you will see both fronend and backend images push to AWS ECR.</p>
+<h2 id="create-ec2-instance">Create EC2 Instance </h2>
+<p>Follow these steps to configure your Amazon EC2 instance:</p>
+<ol>
+<li>
+<p><strong>Access EC2</strong>:</p>
+<ul>
+<li>In the AWS Management Console, search for and select <strong>EC2</strong>.</li>
+</ul>
+</li>
+<li>
+<p><strong>Create an Instance</strong>:</p>
+<ul>
+<li>Click on <strong>Create Instance</strong>.</li>
+</ul>
+</li>
+<li>
+<p><strong>Select the Operating System</strong>:</p>
+<ul>
+<li>Choose <strong>Amazon Linux</strong> as the operating system.</li>
+</ul>
+</li>
+<li>
+<p><strong>Key Pair Setup</strong>:</p>
+<ul>
+<li>Choose a key pair name. If you don’t have one, create a new key pair.</li>
+</ul>
+</li>
+<li>
+<p><strong>Security Group Configuration</strong>:</p>
+<ul>
+<li>Create a new security group.</li>
+</ul>
+</li>
+<li>
+<p><strong>Configure SSH Access</strong>:</p>
+<ul>
+<li>Set the security group rules to allow SSH traffic. You can allow access from anywhere or restrict it to your IP address for enhanced security.</li>
+</ul>
+</li>
+<li>
+<p><strong>Elastic IP</strong>:<br>
+Next search for Elastic IP and allocate our EC2 a unchanged IP. This will hepl our DNS redirection in later steps.</p>
+</li>
+</ol>
+<hr>
+<p><strong>Important Note</strong>: For the security group setting, we need to make sure prot 80, 443 and 22 open to your ip or anywhere.</p>
+<p><img src="image-2.png" alt="alt text"></p>
+<hr>
+<h4 id="create-rds-instance">Create RDS Instance </h4>
+<p>Follow these steps to configure your Amazon RDS instance for MySQL:</p>
+<ol>
+<li>
+<p><strong>Access RDS</strong>:</p>
+<ul>
+<li>In the AWS Management Console, search for and select <strong>RDS</strong>.</li>
+</ul>
+</li>
+<li>
+<p><strong>Choose MySQL</strong>:</p>
+<ul>
+<li>Select <strong>MySQL</strong> as the database engine.</li>
+</ul>
+</li>
+<li>
+<p><strong>Select Free Tier</strong>:</p>
+<ul>
+<li>Opt for the <strong>Free Tier</strong> to manage costs.</li>
+</ul>
+</li>
+<li>
+<p><strong>Deployment Type</strong>:</p>
+<ul>
+<li>Choose a <strong>Single AZ (Availability Zone) instance deployment</strong> for simplicity and cost savings.</li>
+</ul>
+</li>
+<li>
+<p><strong>Management Type</strong>:</p>
+<ul>
+<li>Select <strong>Self-managed</strong> for full control over the database management.</li>
+</ul>
+</li>
+<li>
+<p><strong>Set a Database Password</strong>:</p>
+<ul>
+<li>Ensure you provide a secure password for your database.</li>
+</ul>
+</li>
+<li>
+<p><strong>Connect to an EC2 Compute Resource</strong>:</p>
+<ul>
+<li>Choose to connect to an EC2 compute resource. This ensures that your database and EC2 instance are in the same VPC (Virtual Private Cloud), facilitating secure and efficient communication.</li>
+</ul>
+</li>
+</ol>
+<h4 id="ssh-ec2-instance">SSH EC2 Instance </h4>
+<p>In this step ensure AWS CLI is installed and add your aws_access_key_id and aws_secret_access_key under the ./aws/credentials</p>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>chmod 400 "yourkeypair.pem"
+
+ssh -i "yourkeypair.pem" ec2-user@ec2-yourip.compute-1.amazonaws.com
+</code></pre><p>Install AWS CLI in EC2 and also set config file under./aws/credentials</p>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>sudo yum install aws-cli -y
+</code></pre><p>Install Docker</p>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>sudo amazon-linux-extras install docker
+sudo service docker start
+sudo usermod -a -G docker ec2-user
+</code></pre><p>Install MySQL workbench</p>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>sudo dnf install mariadb105
+
+mysql -u admin -p -h database-1.xxxxxxxxxx.us-east-1.rds.amazonaws.com // Your RDS end point
+</code></pre><p>Execute init.sql file in repo, you will see dummy data exist in database.</p>
+<p><img src="image-3.png" alt="alt text"></p>
+<p>Login to ECR</p>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>aws ecr get-login-password --region us-east-1 | sudo docker login --username AWS --password-stdin 377816764053.dkr.ecr.us-east-1.amazonaws.com
+</code></pre><p>Pull frontend images and check port is ready to accepct connection</p>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>sudo docker pull 377816764053.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
+
+</code></pre><pre data-role="codeBlock" data-info="" class="language-text"><code>sudo docker run -d -p 80:3000 377816764053.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
+</code></pre><p><strong>Note: We only set up frontend here</strong></p>
+<p>Visit <a href="http://EC2IP">http://EC2IP</a>, you will see frontend is running succefully.</p>
+<p><img src="image-4.png" alt="alt text"></p>
+<h2 id="setting-up-a-hosted-zone-in-aws-route-53-for-your-custom-domain">Setting Up a Hosted Zone in AWS Route 53 for Your Custom Domain </h2>
+<p><img src="e50bb4dcf36ea85a4710f6ed49adc8c.png" alt="alt text"><br>
+Follow these steps to configure AWS Route 53 to manage your domain's DNS and redirect traffic to an EC2 instance:</p>
+<ol>
+<li>
+<p><strong>Access Route 53</strong>:</p>
+<ul>
+<li>Navigate to the AWS Management Console and select <strong>Route 53</strong>.</li>
+</ul>
+</li>
+<li>
+<p><strong>Create a Hosted Zone</strong>:</p>
+<ul>
+<li>Click on <strong>Create Hosted Zone</strong>.</li>
+<li>Enter your custom domain name and follow the prompts to establish the zone.</li>
+</ul>
+</li>
+<li>
+<p><strong>Update Your Domain's Name Servers</strong>:</p>
+<ul>
+<li>Upon creation, Route 53 will assign a set of DNS servers (NS records) to your hosted zone.</li>
+<li>Copy these NS records and update the DNS settings on your domain registrar's site to point to these AWS name servers, delegating DNS management for your domain to AWS.</li>
+</ul>
+</li>
+<li>
+<p><strong>Create an A Record</strong>:</p>
+<ul>
+<li>In the Route 53 hosted zone, add an A record.</li>
+<li>Configure this A record to point to your EC2 instance’s public IP address.</li>
+<li>This setup ensures that all traffic to your domain is directed to your EC2 server.</li>
+</ul>
+</li>
+</ol>
+<p><img src="image-5.png" alt="alt text"><br>
+<img src="image-6.png" alt="alt text"></p>
+<p>Wait few hours and enter your domain</p>
+<p><img src="image-7.png" alt="alt text"></p>
+<h2 id="set-up-nginx-and-serve-our-backend-in-reverse-proxy">Set up Nginx and serve our backend in reverse proxy </h2>
+<h4 id="installing-and-running-nginx">Installing and running Nginx </h4>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>sudo yum install nginx -y
+sudo systemctl start nginx
+</code></pre><h4 id="install-certbot">Install certbot </h4>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>sudo yum install -y certbot python2-certbot-nginx
+</code></pre><h4 id="selft-sign-ssl-certificate">Selft sign SSL certificate </h4>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>sudo certbot --nginx -d yourdomain  -d www.yourdomain
+
+</code></pre><h4 id="set-up-nginx-configuration-exmaple---the-server-as-a-reverse-proxy-for-both-your-frontend-and-backend-services">Set up Nginx configuration exmaple - the server as a reverse proxy for both your frontend and backend services. </h4>
+<p><img src="image-10.png" alt="alt text"></p>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>sudo vim /etc/nginx/conf.d/www.junjiawangusf.live.conf
+</code></pre><pre data-role="codeBlock" data-info="" class="language-text"><code>server {
+    server_name www.junjiawangusf.live;
+
+    # Serve frontend
+    location / {
+        proxy_pass http://localhost:8080;  # Forward requests to your frontend on port 8080
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # Serve backend API
+    location /api/ {
+        proxy_pass http://localhost:8000/;  # Forward requests to your backend on port 8000
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/www.junjiawangusf.live/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/www.junjiawangusf.live/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+}
+
+server {
+    if ($host = www.junjiawangusf.live) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+    listen 80;
+    server_name www.junjiawangusf.live;
+    return 404; # managed by Certbot
+}
+</code></pre><p>Restart Nginx</p>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>sudo systemctl reload nginx
+
+</code></pre><h4 id="stop-frontend-container">Stop frontend container </h4>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>docker ps
+docker stop container id
+</code></pre><h4 id="pull-backend-images-and-run-frontend-in-different-port">Pull backend images and run frontend in different port </h4>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>sudo docker run -d   -p 8000:8000   -e DB_HOST="database-1.cmkrqsxfvwur.us-east-1.rds.amazonaws.com"   -e DB_USER="admin"   -e DB_PASSWORD="password"   -e DB_DATABASE="weightTracker"   -e PORT=8000   377816764053.dkr.ecr.us-east-1.amazonaws.com/backend:latest
+
+sudo docker run -d -p 8080:3000 377816764053.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
+</code></pre><hr>
+<p><strong><em>Note:</em></strong></p>
+<ol>
+<li>
+<p>Frontend Port Change: We now host our frontend on port 8080, instead of the standard port 80, because we've configured Nginx to handle the reverse proxy setup.</p>
+</li>
+<li>
+<p>Nginx Configuration:</p>
+</li>
+<li>
+<p>Root Access Redirection: Nginx is configured to listen on port 80. All requests to the root domain are redirected to port 8080 where the frontend is hosted.<br>
+API Access: Any requests starting with /api are redirected to port 8000, where the backend services are running.<br>
+Docker Image Handling with ECR:</p>
+</li>
+<li>
+<p>Having previously logged into Amazon ECR, if a required Docker image is not found locally, Nginx will automatically search for it in ECR and pull it as needed</p>
+</li>
+</ol>
+<hr>
+<h3 id="finally-try-our-our-website">Finally try our our website </h3>
+<p><img src="image-8.png" alt="alt text"><br>
+<img src="image-9.png" alt="alt text"></p>
+
+      </div>
+      
+      
+    
+    
+    
+    
+    
+    
+  
+    </body></html>

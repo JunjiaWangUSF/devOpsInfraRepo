@@ -1,0 +1,26 @@
+version: "3.8"
+services:
+  frontend:
+    image: 377816764053.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
+    ports:
+      - "80:80"
+
+  backend:
+    image: 377816764053.dkr.ecr.us-east-1.amazonaws.com/backend:latest
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+  test:
+    build: .
+    environment:
+      NODE_ENV: test
+    command: npm run test
+    depends_on:
+      - db
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: testdb
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
