@@ -8,9 +8,10 @@ https://github.com/JunjiaWangUSF/devOpsInfraRepo
 
 ### Abstraction
 
+![alt text](image-11.png)
 In this article, we will explore the process of building a small website, starting from local development and progressing to more complex deployment stages. Initially, we'll set up our development environment and create our website locally. Following this, we will implement a GitHub action and conduct connectivity tests to ensure that our Docker images are ready for further stages.
 
-We'll then introduce a nightly build process to simulate a real-world daily software cycle, providing continuous integration and helping catch issues early. Once our application is ready, we will deploy it to an Amazon EC2 instance. For web hosting, we'll use Nginx and integrate Route 53 for DNS management. We'll also secure a unique domain to give our website a professional touch. This approach offers a comprehensive overview of the website development lifecycle, from code creation to public release.
+We'll then introduce a nightly build process to simulate a real-world daily software cycle, providing continuous integration and helping catch issues early. Once our application is ready, we will deploy it to an tempory Amazon EC2 instance to running a mock integration test. After integration test is passed, we will push images to a new repo and deploy our webiste. For web hosting, we'll use Nginx and integrate Route 53 for DNS management. We'll also secure a unique domain to give our website a professional touch. This approach offers a comprehensive overview of the website development lifecycle, from code creation to public release.
 
 ### Prerequisites
 
@@ -103,9 +104,9 @@ You'll need to configure the following secrets to ensure your GitHub Actions can
 
 #### Github Action
 
-Next, you'll need to log in to your AWS account. Once logged in, use the search bar to find and select ECR (Elastic Container Registry). Here, you should create two repositories; name one frontend and the other backend to organize your container images accordingly.
+Next, you'll need to log in to your AWS account. Once logged in, use the search bar to find and select ECR (Elastic Container Registry). Here, you should create four repositories; frontend, backend, frontend-host and backend-host.
 
-![alt text](image-1.png)
+![alt text](image-12.png)
 
 ## Nightly Build GitHub Actions Workflow Overview
 
@@ -153,7 +154,7 @@ This GitHub Actions workflow is designed to automate the build, test, and deploy
 
 If workflow runs correctly, you will see both fronend and backend images push to AWS ECR.
 
-## Create EC2 Instance
+## Create temporary EC2 Instance
 
 Follow these steps to configure your Amazon EC2 instance:
 
@@ -192,6 +193,115 @@ Follow these steps to configure your Amazon EC2 instance:
 
 ---
 
+#### Tempory EC2 Machine
+
+##### SSH EC2 Instance
+
+In this step ensure AWS CLI is installed and add your aws_access_key_id and aws_secret_access_key under the ./aws/credentials
+
+```
+chmod 400 "yourkeypair.pem"
+
+ssh -i "yourkeypair.pem" ec2-user@ec2-yourip.compute-1.amazonaws.com
+```
+
+Install AWS CLI in EC2 and also set config file under./aws/credentials
+
+```
+sudo yum install aws-cli -y
+```
+
+##### Install Docker
+
+```
+sudo amazon-linux-extras install docker
+sudo service docker start
+sudo usermod -a -G docker ec2-user
+sudo curl -L "https://github.com/docker/compose/releases/download/v2.10.2/docker-compose-linux-x86_64" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+docker-compose version
+
+
+```
+
+##### Docker compose file
+
+```
+version: '3.8'
+
+services:
+  frontend:
+    image: 377816764053.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
+    ports:
+      - "3000:3000"
+
+  backend:
+    image: 377816764053.dkr.ecr.us-east-1.amazonaws.com/backend:latest
+    ports:
+      - "8000:8000"
+    environment:
+      DB_HOST: "database-1.cmkrqsxfvwur.us-east-1.rds.amazonaws.com"
+      DB_USER: "admin"
+      DB_PASSWORD: "password"
+      DB_DATABASE: "weightTracker"
+      PORT: "8000"
+
+```
+
+This docker compsoe file is nessary command for running following script.
+
+myscript.sh
+
+```
+#!/bin/bash
+
+# Load AWS ECR login
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 377816764053.dkr.ecr.us-east-1.amazonaws.com
+
+# Explicitly pull the latest images
+docker-compose pull
+
+# Start services with Docker Compose
+docker-compose up -d
+
+# Pause the script for 15 seconds to allow services to start
+sleep 15
+
+# Perform a curl request to check if frontend serves content correctly
+STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000)
+
+if [ "$STATUS_CODE" -eq 200 ]; then
+    echo "Server responded with HTTP 200. Proceeding to push images to new ECR repository."
+
+    # Define new ECR repositories (modify these according to your needs)
+    NEW_FRONTEND_ECR="377816764053.dkr.ecr.us-east-1.amazonaws.com/frontend-host:latest"
+    NEW_BACKEND_ECR="377816764053.dkr.ecr.us-east-1.amazonaws.com/backend-host:latest"
+
+    # Tag and push frontend image
+    docker tag 377816764053.dkr.ecr.us-east-1.amazonaws.com/frontend:latest $NEW_FRONTEND_ECR
+    docker push $NEW_FRONTEND_ECR
+
+    # Tag and push backend image
+    docker tag 377816764053.dkr.ecr.us-east-1.amazonaws.com/backend:latest $NEW_BACKEND_ECR
+    docker push $NEW_BACKEND_ECR
+
+    echo "Images have been pushed to new ECR repositories."
+else
+    echo "Server response was not HTTP 200. Not pushing images."
+fi
+
+# Optionally stop services
+docker-compose down
+```
+
+this a custom scirpt that running a health check on frontend, if health check passed it will push current image on a host repo for both frontedn and backend, name frontend-host and backend-host.
+
+Running script
+
+```
+./myscript.sh
+```
+
 #### Create RDS Instance
 
 Follow these steps to configure your Amazon RDS instance for MySQL:
@@ -221,33 +331,15 @@ Follow these steps to configure your Amazon RDS instance for MySQL:
    - Ensure you provide a secure password for your database.
 
 7. **Connect to an EC2 Compute Resource**:
-   - Choose to connect to an EC2 compute resource. This ensures that your database and EC2 instance are in the same VPC (Virtual Private Cloud), facilitating secure and efficient communication.
+   - Choose to connect to an EC2 compute resource. This ensures that your database and EC2 instance are in the same VPC (Virtual Private Cloud), facilitating secure and efficient communication. Please connect to QA EC2.
 
-#### SSH EC2 Instance
+#### QA EC2 Machine
 
-In this step ensure AWS CLI is installed and add your aws_access_key_id and aws_secret_access_key under the ./aws/credentials
+##### Create another EC2 intsance
 
-```
-chmod 400 "yourkeypair.pem"
+follow previous steps to create another EC2 instance and install docker and docker compose
 
-ssh -i "yourkeypair.pem" ec2-user@ec2-yourip.compute-1.amazonaws.com
-```
-
-Install AWS CLI in EC2 and also set config file under./aws/credentials
-
-```
-sudo yum install aws-cli -y
-```
-
-Install Docker
-
-```
-sudo amazon-linux-extras install docker
-sudo service docker start
-sudo usermod -a -G docker ec2-user
-```
-
-Install MySQL workbench
+##### Install MySQL workbench
 
 ```
 sudo dnf install mariadb105
@@ -268,12 +360,12 @@ aws ecr get-login-password --region us-east-1 | sudo docker login --username AWS
 Pull frontend images and check port is ready to accepct connection
 
 ```
-sudo docker pull 377816764053.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
+sudo docker pull 377816764053.dkr.ecr.us-east-1.amazonaws.com/frontend-host:latest
 
 ```
 
 ```
-sudo docker run -d -p 80:3000 377816764053.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
+sudo docker run -d -p 80:3000 377816764053.dkr.ecr.us-east-1.amazonaws.com/frontend-host:latest
 ```
 
 **Note: We only set up frontend here**
@@ -401,9 +493,9 @@ docker stop container id
 #### Pull backend images and run frontend in different port
 
 ```
-sudo docker run -d   -p 8000:8000   -e DB_HOST="database-1.cmkrqsxfvwur.us-east-1.rds.amazonaws.com"   -e DB_USER="admin"   -e DB_PASSWORD="password"   -e DB_DATABASE="weightTracker"   -e PORT=8000   377816764053.dkr.ecr.us-east-1.amazonaws.com/backend:latest
+sudo docker run -d   -p 8000:8000   -e DB_HOST="database-1.cmkrqsxfvwur.us-east-1.rds.amazonaws.com"   -e DB_USER="admin"   -e DB_PASSWORD="password"   -e DB_DATABASE="weightTracker"   -e PORT=8000   377816764053.dkr.ecr.us-east-1.amazonaws.com/backend-host:latest
 
-sudo docker run -d -p 8080:3000 377816764053.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
+sudo docker run -d -p 8080:3000 377816764053.dkr.ecr.us-east-1.amazonaws.com/frontend-host:latest
 ```
 
 ---

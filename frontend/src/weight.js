@@ -10,6 +10,7 @@ import {
   Title,
   Tooltip,
   Legend,
+  Colors,
 } from "chart.js";
 
 ChartJS.register(
@@ -59,7 +60,7 @@ function WeightTracker() {
 
   return (
     <div>
-      <h2>Track Your Weight</h2>
+      <h2 style={{ color: "blue" }}>Track Your Weight</h2>
       <form onSubmit={handleSubmit}>
         <input
           type="text"
