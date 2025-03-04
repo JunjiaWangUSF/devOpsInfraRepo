@@ -4,10 +4,22 @@ on:
   push:
     branches:
       - main
+
 jobs:
   launch-ec2:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: List repository contents
+        run: |
+          ls -R
+
+      - name: Use private key
+        run: |
+          chmod 400 keys/2_26_2025.pem
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v3
         with:
@@ -32,10 +44,6 @@ jobs:
           aws ec2 wait instance-running --instance-ids $INSTANCE_ID
           PUBLIC_IP=$(aws ec2 describe-instances --instance-ids $INSTANCE_ID --query 'Reservations[0].Instances[0].PublicIpAddress' --output text)
           echo "::set-output name=public_ip::$PUBLIC_IP"
-
-      - name: Use private key
-        run: |
-          chmod 400 keys/2_26_2025.pem
 
       - name: Install dependencies on EC2 instance (Ubuntu)
         run: |
