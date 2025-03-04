@@ -32,7 +32,7 @@ jobs:
           INSTANCE_ID=$(aws ec2 run-instances \
             --image-id ami-04b4f1a9cf54c11d0 \
             --count 1 \
-            --instance-type t2.micro \
+            --instance-type t2.medium \
             --key-name "2/26/2025" \
             --security-group-ids sg-00815fc516a8e3401 \
             --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=TempInstance}]' \
