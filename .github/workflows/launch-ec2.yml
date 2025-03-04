@@ -51,28 +51,36 @@ jobs:
           scp -o StrictHostKeyChecking=no -i keys/2_26_2025.pem SmokeTest/docker-compose.yml ubuntu@${{ steps.create-ec2.outputs.public_ip }}:~
           scp -o StrictHostKeyChecking=no -i keys/2_26_2025.pem SmokeTest/script.sh ubuntu@${{ steps.create-ec2.outputs.public_ip }}:~
 
-      - name: Install dependencies, log into Docker, and pull images
+      - name: Install dependencies on EC2 instance
         run: |
           ssh -o StrictHostKeyChecking=no -i keys/2_26_2025.pem ubuntu@${{ steps.create-ec2.outputs.public_ip }} << 'EOF'
-          # Update and install required packages
+          # Add Docker's official GPG key:
           sudo apt-get update
-          sudo apt-get install -y ca-certificates curl awscli python3 python3-pip
-
-          # Install Docker and Docker Compose
+          sudo apt-get install -y ca-certificates curl
           sudo install -m 0755 -d /etc/apt/keyrings
           sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
           sudo chmod a+r /etc/apt/keyrings/docker.asc
-          echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
-          $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+          # Add the repository to Apt sources:
+          echo \
+          "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+          $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | \
+          sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
           sudo apt-get update
           sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+          sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
           sudo systemctl enable docker
           sudo systemctl start docker
 
-          # Navigate to the directory containing the Docker Compose file
-          cd /home/ubuntu/
+          # Add ubuntu user to docker group
+          sudo usermod -aG docker ubuntu
 
-          # Docker login to AWS ECR and pull images using Docker Compose
+          # Install Python and AWS CLI
+          sudo apt install -y python3  
+          sudo apt install -y python3-pip
+          sudo pip install awscli --break-system-packages
+
           if aws ecr get-login-password --region us-east-1 | sudo docker login --username AWS --password-stdin 377816764053.dkr.ecr.us-east-1.amazonaws.com; then
               echo "Docker login successful. Pulling images..."
               sudo docker-compose pull && echo "Images pulled successfully."
@@ -81,8 +89,9 @@ jobs:
               exit 1
           fi
 
-          # Starting services with Docker Compose
+            # Starting services with Docker Compose
           sudo docker-compose up -d
+          # To ensure the group addition is recognized, you could attempt a new login session or just use sudo for docker commands
           EOF
 
       - name: Make script executable and run it
