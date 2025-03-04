@@ -1,17 +1,15 @@
 #!/bin/bash
 
-# Install AWS CLI
-sudo apt-get update -y
-sudo apt-get install -y awscli
+
 
 # Load AWS ECR login
-aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 377816764053.dkr.ecr.us-east-1.amazonaws.com
+aws ecr get-login-password --region us-east-1 | sudo docker login --username AWS --password-stdin 377816764053.dkr.ecr.us-east-1.amazonaws.com
 
-# Explicitly pull the latest images
-docker-compose pull
+# Explicitly pull the latest images using sudo if not added to docker group beforehand
+sudo docker-compose pull
 
 # Start services with Docker Compose
-docker-compose up -d
+sudo docker-compose up -d
 
 # Pause the script for 30 seconds to allow services to start
 sleep 30
@@ -26,13 +24,13 @@ if [ "$STATUS_CODE" -eq 200 ]; then
     NEW_FRONTEND_ECR="377816764053.dkr.ecr.us-east-1.amazonaws.com/frontend-host:latest"
     NEW_BACKEND_ECR="377816764053.dkr.ecr.us-east-1.amazonaws.com/backend-host:latest"
 
-    # Tag and push frontend image
-    docker tag 377816764053.dkr.ecr.us-east-1.amazonaws.com/frontend:latest $NEW_FRONTEND_ECR
-    docker push $NEW_FRONTEND_ECR
+    # Tag and push frontend image using sudo if needed
+    sudo docker tag 377816764053.dkr.ecr.us-east-1.amazonaws.com/frontend:latest $NEW_FRONTEND_ECR
+    sudo docker push $NEW_FRONTEND_ECR
 
-    # Tag and push backend image
-    docker tag 377816764053.dkr.ecr.us-east-1.amazonaws.com.amazonaws.com/backend:latest $NEW_BACKEND_ECR
-    docker push $NEW_BACKEND_ECR
+    # Tag and push backend image using sudo if needed
+    sudo docker tag 377816764053.dkr.ecr.us-east-1.amazonaws.com/backend:latest $NEW_BACKEND_ECR
+    sudo docker push $NEW_BACKEND_ECR
 
     echo "Images have been pushed to new ECR repositories."
 else
@@ -40,4 +38,4 @@ else
 fi
 
 # Optionally stop services
-docker-compose down
+sudo docker-compose down
