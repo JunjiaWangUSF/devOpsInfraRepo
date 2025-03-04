@@ -44,6 +44,9 @@ jobs:
           aws ec2 wait instance-running --instance-ids $INSTANCE_ID
           PUBLIC_IP=$(aws ec2 describe-instances --instance-ids $INSTANCE_ID --query 'Reservations[0].Instances[0].PublicIpAddress' --output text)
           echo "::set-output name=public_ip::$PUBLIC_IP"
+      - name: Wait for EC2 Running
+        run: |
+          aws ec2 wait instance-status-ok --instance-ids ${{ steps.create-ec2.outputs.instance_id }}
 
       - name: Install dependencies on EC2 instance (Ubuntu)
         run: |
