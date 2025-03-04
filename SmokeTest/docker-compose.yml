@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  frontend:
+    image: 377816764053.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
+    ports:
+      - "3000:3000"
+
+  backend:
+    image: 377816764053.dkr.ecr.us-east-1.amazonaws.com/backend:latest
+    ports:
+      - "8000:8000"
+    environment:
+      DB_HOST: "database-1.cmkrqsxfvwur.us-east-1.rds.amazonaws.com"
+      DB_USER: "admin"
+      DB_PASSWORD: "password"
+      DB_DATABASE: "weightTracker"
+      PORT: "8000"
