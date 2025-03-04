@@ -80,6 +80,15 @@ jobs:
           sudo apt install -y python3  
           sudo apt install -y python3-pip
           sudo pip install awscli --break-system-packages
+          # Ensure .aws directory exists
+          mkdir -p ~/.aws
+
+          # Create or clear credentials file
+          echo "[default]" > ~/.aws/credentials
+          echo "aws_access_key_id = ${{ secrets.AWS_ACCESS_KEY_ID }}" >> ~/.aws/credentials
+          echo "aws_secret_access_key = ${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> ~/.aws/credentials
+          echo "aws_session_token = ${{ secrets.AWS_SESSION_TOKEN }}" >> ~/.aws/credentials
+          echo "region = ${{ secrets.AWS_REGION }}" >> ~/.aws/credentials
 
           if aws ecr get-login-password --region us-east-1 | sudo docker login --username AWS --password-stdin 377816764053.dkr.ecr.us-east-1.amazonaws.com; then
               echo "Docker login successful. Pulling images..."
