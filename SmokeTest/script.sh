@@ -23,15 +23,15 @@ if [ "$STATUS_CODE" -eq 200 ]; then
     echo "Server responded with HTTP 200. Proceeding to push images to new ECR repository."
 
     # Define new ECR repositories (modify these according to your needs)
-    NEW_FRONTEND_ECR="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/frontend-host:latest"
-    NEW_BACKEND_ECR="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/backend-host:latest"
+    NEW_FRONTEND_ECR="377816764053.dkr.ecr.us-east-1.amazonaws.com/frontend-host:latest"
+    NEW_BACKEND_ECR="377816764053.dkr.ecr.us-east-1.amazonaws.com/backend-host:latest"
 
     # Tag and push frontend image
-    docker tag ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/frontend:latest $NEW_FRONTEND_ECR
+    docker tag 377816764053.dkr.ecr.us-east-1.amazonaws.com/frontend:latest $NEW_FRONTEND_ECR
     docker push $NEW_FRONTEND_ECR
 
     # Tag and push backend image
-    docker tag ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/backend:latest $NEW_BACKEND_ECR
+    docker tag 377816764053.dkr.ecr.us-east-1.amazonaws.com.amazonaws.com/backend:latest $NEW_BACKEND_ECR
     docker push $NEW_BACKEND_ECR
 
     echo "Images have been pushed to new ECR repositories."
