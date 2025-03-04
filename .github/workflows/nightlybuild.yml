@@ -3,9 +3,9 @@ name: Nightly Build
 on:
   schedule:
     - cron: "0 0 * * *" # Runs every day at midnight
-  # push:
-  #   branches:
-  #     - main
+  push:
+    branches:
+      - main
 
 jobs:
   build-and-push:

@@ -1,9 +1,10 @@
 name: Launch EC2 and Run Tests
 
 on:
-  push:
-    branches:
-      - main
+  workflow_run:
+    workflows: ["Nightly Build"]
+    types:
+      - completed
 
 jobs:
   launch-ec2:
