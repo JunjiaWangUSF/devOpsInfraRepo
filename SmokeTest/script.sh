@@ -5,7 +5,7 @@ sudo apt-get update -y
 sudo apt-get install -y awscli
 
 # Load AWS ECR login
-aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 377816764053.dkr.ecr.us-east-1.amazonaws.com
 
 # Explicitly pull the latest images
 docker-compose pull
