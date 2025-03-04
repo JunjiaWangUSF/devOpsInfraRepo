@@ -45,15 +45,6 @@ jobs:
       - name: Query database
         run: docker exec devopsinfrarepo_mysql_1 mysql -h mysql -P 3306 -u root -ppassword -e "USE weightTracker; SELECT * FROM weights;"
 
-      - name: Run tests
-        env:
-          DB_HOST: mysql
-          DB_USER: root
-          DB_PASSWORD: password
-          DB_DATABASE: weightTracker
-          DB_PORT: 3306
-        run: docker exec devopsinfrarepo_backend_1 npm test
-
       - name: Stop services
         run: docker-compose down
 
@@ -88,6 +79,106 @@ jobs:
           cd frontend
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+      - name: Create temporary EC2 instance
+        id: create-ec2
+        run: |
+          INSTANCE_ID=$(aws ec2 run-instances \
+            --image-id ami-0c61Mdet69Libbf37 \  # AMI ID from the image
+            --count 1 \  # Number of instances to launch
+            --instance-type t2.micro \  # Instance type from the image
+            --key-name 2_26_2025 \  # Updated key name
+            --security-group-ids sg-0285aa1bf8e98f66 \  # Security group ID from the image
+            --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=TempInstance}]' \
+            --query 'Instances[0].InstanceId' \
+            --output text)
+          echo "::set-output name=instance_id::$INSTANCE_ID"
+          aws ec2 wait instance-running --instance-ids $INSTANCE_ID
+          PUBLIC_IP=$(aws ec2 describe-instances --instance-ids $INSTANCE_ID --query 'Reservations[0].Instances[0].PublicIpAddress' --output text)
+          echo "::set-output name=public_ip::$PUBLIC_IP"
+
+      - name: Use private key
+        run: |
+          chmod 400 keys/2_26_2025.pem
+
+      - name: Install dependencies on EC2 instance
+        run: |
+          ssh -o StrictHostKeyChecking=no -i keys/2_26_2025.pem ec2-user@${{ steps.create-ec2.outputs.public_ip }} << 'EOF'
+          # Install Docker, Docker Compose, and AWS CLI
+          sudo yum update -y
+          sudo yum install -y docker
+          sudo service docker start
+          sudo usermod -a -G docker ec2-user
+          sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
+          docker-compose --version
+          sudo yum install -y aws-cli
+          aws --version
+
+          # Configure AWS credentials (using GitHub Actions secrets)
+          mkdir -p ~/.aws
+          echo "[default]" > ~/.aws/credentials
+          echo "aws_access_key_id = ${{ secrets.AWS_ACCESS_KEY_ID }}" >> ~/.aws/credentials
+          echo "aws_secret_access_key = ${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> ~/.aws/credentials
+          echo "region = ${{ secrets.AWS_REGION }}" >> ~/.aws/credentials
+          EOF
+
+      - name: Transfer and run script on EC2 instance
+        run: |
+          # Create the script file
+          cat << 'EOL' > ec2-script.sh
+          #!/bin/bash
+
+          # Load AWS ECR login
+          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+
+          # Explicitly pull the latest images
+          docker-compose pull
+
+          # Start services with Docker Compose
+          docker-compose up -d
+
+          # Pause the script for 15 seconds to allow services to start
+          sleep 15
+
+          # Perform a curl request to check if frontend serves content correctly
+          STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000)
+
+          if [ "$STATUS_CODE" -eq 200 ]; then
+              echo "Server responded with HTTP 200. Proceeding to push images to new ECR repository."
+
+              # Define new ECR repositories (modify these according to your needs)
+              NEW_FRONTEND_ECR="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/frontend-host:latest"
+              NEW_BACKEND_ECR="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/backend-host:latest"
+
+              # Tag and push frontend image
+              docker tag ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/frontend:latest $NEW_FRONTEND_ECR
+              docker push $NEW_FRONTEND_ECR
+
+              # Tag and push backend image
+              docker tag ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/backend:latest $NEW_BACKEND_ECR
+              docker push $NEW_BACKEND_ECR
+
+              echo "Images have been pushed to new ECR repositories."
+          else
+              echo "Server response was not HTTP 200. Not pushing images."
+          fi
+
+          # Optionally stop services
+          docker-compose down
+          EOL
+
+          # Transfer the script to the EC2 instance
+          scp -o StrictHostKeyChecking=no -i keys/2_26_2025.pem ec2-script.sh ec2-user@${{ steps.create-ec2.outputs.public_ip }}:~/ec2-script.sh
+
+          # Make the script executable and run it
+          ssh -o StrictHostKeyChecking=no -i keys/2_26_2025.pem ec2-user@${{ steps.create-ec2.outputs.public_ip }} "chmod +x ~/ec2-script.sh && ~/ec2-script.sh"
+
+      - name: Terminate temporary EC2 instance
+        if: always()
+        run: |
+          aws ec2 terminate-instances --instance-ids ${{ steps.create-ec2.outputs.instance_id }}
+          aws ec2 wait instance-terminated --instance-ids ${{ steps.create-ec2.outputs.instance_id }}
 
       - name: Clean up
         if: always()

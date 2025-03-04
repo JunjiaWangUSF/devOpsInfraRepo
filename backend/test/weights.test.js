@@ -1,5 +1,5 @@
 import request from "supertest";
-import { app, server, pool } from "../src/app.js"; // Adjust path if necessary
+import { app, server, pool } from "../src/app.js";
 
 describe("Database Operations", () => {
   afterAll(async () => {
@@ -13,7 +13,7 @@ describe("Database Operations", () => {
   });
 
   test("should retrieve mock data from the database", async () => {
-    const response = await request(app).get("/weights/test"); // Changed 'server' to 'app' if you don't export server conditionally
+    const response = await request(app).get("/weights/test");
     expect(response.statusCode).toBe(200);
     expect(response.body).toBeInstanceOf(Array);
     expect(response.body).not.toHaveLength(0);
