@@ -1,13 +1,17 @@
-name: Nightly Build
-
+name: Promote RC
 on:
-  schedule:
-    - cron: "0 0 * * *" # Runs every day at midnight
+  repository_dispatch:
+    types: [promote-rc]
 
 jobs:
-  build-and-push:
+  promote:
     runs-on: ubuntu-latest
     steps:
+      - name: Extract RC Version
+        run: |
+          echo "RC_VERSION=${{ github.event.client_payload.rc_version }}" >> $GITHUB_ENV
+          echo "TARGET_TAG=${RC_VERSION#rc}" >> $GITHUB_ENV
+
       - name: Checkout code
         uses: actions/checkout@v2
 
@@ -66,15 +70,15 @@ jobs:
         run: |
           aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
 
-      - name: Build, tag, and push backend image to Amazon ECR
-        env:
-          ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
-          ECR_REPOSITORY: backend
-          IMAGE_TAG: latest
-        run: |
-          cd backend
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          - name: Build, tag, and push backend image to Amazon ECR
+          env:
+            ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+            ECR_REPOSITORY: backend
+            IMAGE_TAG: latest
+          run: |
+            cd backend
+            docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+            docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
       - name: Build, tag, and push frontend image to Amazon ECR
         env:
@@ -86,6 +90,37 @@ jobs:
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
-      - name: Clean up
-        if: always()
-        run: docker-compose down
+      - name: Retag frontend Image
+        run: |
+          docker pull $ECR_REPO:latest
+          docker tag $ECR_REPO:latest $ECR_REPO:${{ env.RC_VERSION }}
+          docker push $ECR_REPO:${{ env.RC_VERSION }}
+        env:
+          ECR_REPO: 377816764053.dkr.ecr.us-east-1.amazonaws.com/frontend
+
+      - name: Retag backend Image
+        run: |
+          docker pull $ECR_REPO:latest
+          docker tag $ECR_REPO:latest $ECR_REPO:${{ env.RC_VERSION }}
+          docker push $ECR_REPO:${{ env.RC_VERSION }}
+        env:
+          ECR_REPO: 377816764053.dkr.ecr.us-east-1.amazonaws.com/backend
+
+      - name: Generate Subdomain
+        run: |
+
+          MAJOR_VERSION=$(echo ${{ env.RC_VERSION }} | cut -d'.' -f1 | tr -d 'v')
+
+
+          RC_NUMBER=$(echo ${{ env.RC_VERSION }} | grep -oP 'rc\K\d+')
+
+          echo "SUBDOMAIN=rc${RC_NUMBER}-v${MAJOR_VERSION}.domain.com" >> $GITHUB_ENV
+
+    #   - name: Deploy to EC2
+    #     uses: appleboy/ssh-action@v0.1.3
+    #     with:
+    #         script: |
+    #             docker run -d \
+    #             --name rc${RC_NUMBER} \
+    #             -e VIRTUAL_HOST=${{ env.SUBDOMAIN }} \
+    #             $ECR_IMAGE:${{ env.RC_VERSION }}
