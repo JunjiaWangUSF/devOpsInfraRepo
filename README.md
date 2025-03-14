@@ -76,9 +76,11 @@ test file: https://github.com/JunjiaWangUSF/devOpsSourceRepo/blob/main/backend/t
 
 ---
 
-## Github Action
+## Github Action - Overivew
 
-https://github.com/JunjiaWangUSF/devOpsInfraRepo/blob/main/.github/workflows/nightlybuild.yml
+nightly-build: https://github.com/JunjiaWangUSF/devOpsInfraRepo/blob/main/.github/workflows/nightlybuild.yml
+
+launch-ec2: https://github.com/JunjiaWangUSF/devOpsInfraRepo/blob/main/.github/workflows/launch-ec2.yml
 
 Next, we need to set up the necessary GitHub Action secrets to securely store sensitive information required by our workflows. Here’s how to configure these secrets:
 
@@ -154,7 +156,114 @@ This GitHub Actions workflow is designed to automate the build, test, and deploy
 
 If workflow runs correctly, you will see both fronend and backend images push to AWS ECR.
 
-## Create temporary EC2 Instance
+# Launch EC2 and Run Tests
+
+This workflow is triggered by the completion of the "Nightly Build" workflow. It focuses on creating an EC2 instance, deploying the application using Docker Compose, running tests, and then cleaning up the environment.
+
+##### Workflow Trigger
+
+- **Trigger**: Triggered when the "Nightly Build" workflow completes successfully.
+
+##### Jobs and Steps
+
+### Job: Launch EC2 and Run Tests
+
+- **Environment**: Runs on the latest Ubuntu server available on GitHub Actions.
+
+#### Steps:
+
+1. **Checkout Code**
+
+   - Checks out the repository code to the runner.
+   - **Action**: `actions/checkout@v2`
+
+2. **List Repository Contents**
+
+   - Lists all files in the repository for debugging purposes.
+   - **Command**: `ls -R`
+
+3. **Use Private Key**
+
+   - Ensures the private key file has the correct permissions set.
+   - **Command**: `chmod 400 xxxxx.pem`
+
+4. **Configure AWS Credentials**
+
+   - Configures AWS CLI with credentials provided via secrets.
+   - **Action**: `aws-actions/configure-aws-credentials@v3`
+   - **Inputs**:
+     - `aws-access-key-id`: AWS access key ID (from secrets)
+     - `aws-secret-access-key`: AWS secret access key (from secrets)
+     - `aws-session-token`: AWS session token (from secrets)
+     - `aws-region`: AWS region (from secrets)
+
+5. **Create Temporary EC2 Instance**
+
+   - Launches an EC2 instance using specified parameters.
+   - **Command**: Multiple AWS CLI commands to run instances, check instance status, and get the public IP.
+
+6. **Wait for EC2 Running**
+
+   - Waits until the EC2 instance status is ok.
+   - **Command**: `aws ec2 wait instance-status-ok`
+
+7. **Transfer Docker Compose File and Script to EC2 Instance**
+
+   - Transfers necessary Docker Compose and script files to the remote instance using `scp`.
+   - **Command**: `scp` with options to skip host key checking.
+
+   - **script.sh** it running our smoke test, if we recieved status code 200 than push our image to host repositories.
+   - **docker-compose.yml** docker compose file for pull images from ECR
+
+8. **Install Dependencies on EC2 Instance**
+
+   - Connects to the EC2 instance and installs required software like Docker, Docker Compose, and AWS CLI.
+   - **Commands**: A sequence of `ssh` commands executing remote commands on the EC2 instance.
+
+9. **Make Script Executable and Run It**
+
+   - Makes a shell script executable and runs it to execute application setup or tests.
+   - **Command**: `ssh` to modify permissions and execute the script.
+
+10. **Terminate Temporary EC2 Instance**
+    - Terminates the EC2 instance after tests are completed to prevent ongoing charges.
+    - **Command**: `aws ec2 terminate-instances`
+    - **Cleanup Condition**: This step runs regardless of previous steps' success (`if: always()`).
+
+This work flow is trigger by nightly build
+
+### Create RDS Instance
+
+Follow these steps to configure your Amazon RDS instance for MySQL:
+
+1. **Access RDS**:
+
+   - In the AWS Management Console, search for and select **RDS**.
+
+2. **Choose MySQL**:
+
+   - Select **MySQL** as the database engine.
+
+3. **Select Free Tier**:
+
+   - Opt for the **Free Tier** to manage costs.
+
+4. **Deployment Type**:
+
+   - Choose a **Single AZ (Availability Zone) instance deployment** for simplicity and cost savings.
+
+5. **Management Type**:
+
+   - Select **Self-managed** for full control over the database management.
+
+6. **Set a Database Password**:
+
+   - Ensure you provide a secure password for your database.
+
+7. **Connect to an EC2 Compute Resource**:
+   - Choose to connect to an EC2 compute resource. This ensures that your database and EC2 instance are in the same VPC (Virtual Private Cloud), facilitating secure and efficient communication. Please connect to QA EC2.
+
+## Create QA EC2 Instance
 
 Follow these steps to configure your Amazon EC2 instance:
 
@@ -193,8 +302,6 @@ Follow these steps to configure your Amazon EC2 instance:
 
 ---
 
-#### Tempory EC2 Machine
-
 ##### SSH EC2 Instance
 
 In this step ensure AWS CLI is installed and add your aws_access_key_id and aws_secret_access_key under the ./aws/credentials
@@ -224,120 +331,17 @@ docker-compose version
 
 ```
 
-##### Docker compose file
+#### Load AWS ECR login
 
-```
-version: '3.8'
-
-services:
-  frontend:
-    image: 377816764053.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
-    ports:
-      - "3000:3000"
-
-  backend:
-    image: 377816764053.dkr.ecr.us-east-1.amazonaws.com/backend:latest
-    ports:
-      - "8000:8000"
-    environment:
-      DB_HOST: "database-1.cmkrqsxfvwur.us-east-1.rds.amazonaws.com"
-      DB_USER: "admin"
-      DB_PASSWORD: "password"
-      DB_DATABASE: "weightTracker"
-      PORT: "8000"
-
-```
-
-This docker compsoe file is nessary command for running following script.
-
-myscript.sh
-
-```
-#!/bin/bash
-
-# Load AWS ECR login
 aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 377816764053.dkr.ecr.us-east-1.amazonaws.com
 
-# Explicitly pull the latest images
+#### Explicitly pull the latest images
+
 docker-compose pull
 
-# Start services with Docker Compose
+#### Start services with Docker Compose
+
 docker-compose up -d
-
-# Pause the script for 15 seconds to allow services to start
-sleep 15
-
-# Perform a curl request to check if frontend serves content correctly
-STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000)
-
-if [ "$STATUS_CODE" -eq 200 ]; then
-    echo "Server responded with HTTP 200. Proceeding to push images to new ECR repository."
-
-    # Define new ECR repositories (modify these according to your needs)
-    NEW_FRONTEND_ECR="377816764053.dkr.ecr.us-east-1.amazonaws.com/frontend-host:latest"
-    NEW_BACKEND_ECR="377816764053.dkr.ecr.us-east-1.amazonaws.com/backend-host:latest"
-
-    # Tag and push frontend image
-    docker tag 377816764053.dkr.ecr.us-east-1.amazonaws.com/frontend:latest $NEW_FRONTEND_ECR
-    docker push $NEW_FRONTEND_ECR
-
-    # Tag and push backend image
-    docker tag 377816764053.dkr.ecr.us-east-1.amazonaws.com/backend:latest $NEW_BACKEND_ECR
-    docker push $NEW_BACKEND_ECR
-
-    echo "Images have been pushed to new ECR repositories."
-else
-    echo "Server response was not HTTP 200. Not pushing images."
-fi
-
-# Optionally stop services
-docker-compose down
-```
-
-this a custom scirpt that running a health check on frontend, if health check passed it will push current image on a host repo for both frontedn and backend, name frontend-host and backend-host.
-
-Running script
-
-```
-./myscript.sh
-```
-
-#### Create RDS Instance
-
-Follow these steps to configure your Amazon RDS instance for MySQL:
-
-1. **Access RDS**:
-
-   - In the AWS Management Console, search for and select **RDS**.
-
-2. **Choose MySQL**:
-
-   - Select **MySQL** as the database engine.
-
-3. **Select Free Tier**:
-
-   - Opt for the **Free Tier** to manage costs.
-
-4. **Deployment Type**:
-
-   - Choose a **Single AZ (Availability Zone) instance deployment** for simplicity and cost savings.
-
-5. **Management Type**:
-
-   - Select **Self-managed** for full control over the database management.
-
-6. **Set a Database Password**:
-
-   - Ensure you provide a secure password for your database.
-
-7. **Connect to an EC2 Compute Resource**:
-   - Choose to connect to an EC2 compute resource. This ensures that your database and EC2 instance are in the same VPC (Virtual Private Cloud), facilitating secure and efficient communication. Please connect to QA EC2.
-
-#### QA EC2 Machine
-
-##### Create another EC2 intsance
-
-follow previous steps to create another EC2 instance and install docker and docker compose
 
 ##### Install MySQL workbench
 
