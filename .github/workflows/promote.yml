@@ -23,6 +23,7 @@ jobs:
           SANITIZED_VERSION=$(echo "${{ github.event.client_payload.rc_version }}" | tr '.' '-' | sed 's/rc-/rc/g')
           echo "RC_VERSION=$SANITIZED_VERSION" >> $GITHUB_ENV
           echo "SUBDOMAIN=${SANITIZED_VERSION}.junjiawangusf.live" >> $GITHUB_ENV
+          echo  SUBDOMAIN
 
       - name: Checkout code
         uses: actions/checkout@v4
@@ -92,20 +93,18 @@ jobs:
           docker run -d \
             --name backend-${{ env.RC_VERSION }} \
             --network rc-${{ env.RC_VERSION }} \
-            -p 8081:8080 \
+            -p 8000:8000 \
             ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/backend:${{ env.RC_VERSION }}
 
           docker run -d \
             --name frontend-${{ env.RC_VERSION }} \
             --network rc-${{ env.RC_VERSION }} \
-            -p 8001:8000 \
+            -p 8080:3000 \
             -e REACT_APP_API_URL=http://backend-${{ env.RC_VERSION }}:8080/api \
             ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/frontend:${{ env.RC_VERSION }}
 
           # Nginx configuration
           sudo bash -c "sed -e 's/{{SUBDOMAIN}}/${{ env.SUBDOMAIN }}/g' \
-                            -e 's/{{FRONTEND_PORT}}/8001/g' \
-                            -e 's/{{BACKEND_PORT}}/8081/g' \
                             /etc/nginx/templates/rc-template.conf > \
                             /etc/nginx/sites-available/${{ env.SUBDOMAIN }}.conf"
 
