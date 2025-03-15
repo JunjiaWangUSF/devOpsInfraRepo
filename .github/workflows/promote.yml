@@ -91,11 +91,16 @@ jobs:
 
           # Start containers
           docker run -d \
-            --name backend-${{ env.RC_VERSION }} \
-            --network rc-${{ env.RC_VERSION }} \
-            -p 8000:8000 \
-            ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/backend:${{ env.RC_VERSION }}
-
+           --name backend-${{ env.RC_VERSION }} \
+           --network rc-${{ env.RC_VERSION }} \
+           -p 8000:8000 \
+           -e DB_HOST="database-1.cmkrqsxfvwur.us-east-1.rds.amazonaws.com" \
+           -e DB_USER="admin" \
+           -e DB_PASSWORD="password" \
+           -e DB_DATABASE="weightTracker" \
+           -e PORT=8000 \
+           ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/backend:${{ env.RC_VERSION }}
+           
           docker run -d \
             --name frontend-${{ env.RC_VERSION }} \
             --network rc-${{ env.RC_VERSION }} \
