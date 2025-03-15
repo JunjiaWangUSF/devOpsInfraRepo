@@ -114,44 +114,44 @@ jobs:
           echo "RC_VERSION=$SANITIZED_VERSION" >> $GITHUB_ENV
           echo "SUBDOMAIN=${SANITIZED_VERSION}.junjiawangusf.live" >> $GITHUB_ENV
 
-          - name: Deploy to EC2
-          run: |
-            ssh -o StrictHostKeyChecking=no -i keys/2_26_2025.pem ubuntu@ec2-54-88-57-107.compute-1.amazonaws.com << EOF
-            # Create unique network
-            docker network create rc-${RC_VERSION} || true
+      - name: Deploy to EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no -i keys/2_26_2025.pem ubuntu@ec2-54-88-57-107.compute-1.amazonaws.com << EOF
+          # Create unique network
+          docker network create rc-${RC_VERSION} || true
 
-            # Stop and remove existing containers
-            docker stop frontend-${RC_VERSION} backend-${RC_VERSION} || true
-            docker rm frontend-${RC_VERSION} backend-${RC_VERSION} || true
+          # Stop and remove existing containers
+          docker stop frontend-${RC_VERSION} backend-${RC_VERSION} || true
+          docker rm frontend-${RC_VERSION} backend-${RC_VERSION} || true
 
-            # Start containers with unique network
-            docker run -d \
-              --name backend-${RC_VERSION} \
-              --network rc-${RC_VERSION} \
-              -p 8081:8080 \
-              ${{ secrets.ECR_BACKEND }}:${RC_VERSION}
+          # Start containers with unique network
+          docker run -d \
+            --name backend-${RC_VERSION} \
+            --network rc-${RC_VERSION} \
+            -p 8081:8080 \
+            ${{ secrets.ECR_BACKEND }}:${RC_VERSION}
 
-            docker run -d \
-              --name frontend-${RC_VERSION} \
-              --network rc-${RC_VERSION} \
-              -p 8001:8000 \
-              -e REACT_APP_API_URL=http://backend-${RC_VERSION}:8080/api \
-              ${{ secrets.ECR_FRONTEND }}:${RC_VERSION}
+          docker run -d \
+            --name frontend-${RC_VERSION} \
+            --network rc-${RC_VERSION} \
+            -p 8001:8000 \
+            -e REACT_APP_API_URL=http://backend-${RC_VERSION}:8080/api \
+            ${{ secrets.ECR_FRONTEND }}:${RC_VERSION}
 
-            # Generate Nginx config from template
-            sudo bash -c "sed -e 's/{{SUBDOMAIN}}/${SUBDOMAIN}/g' \
-                              -e 's/{{FRONTEND_PORT}}/8001/g' \
-                              -e 's/{{BACKEND_PORT}}/8081/g' \
-                              /etc/nginx/templates/rc-template.conf > \
-                              /etc/nginx/sites-available/${SUBDOMAIN}.conf"
+          # Generate Nginx config from template
+          sudo bash -c "sed -e 's/{{SUBDOMAIN}}/${SUBDOMAIN}/g' \
+                            -e 's/{{FRONTEND_PORT}}/8001/g' \
+                            -e 's/{{BACKEND_PORT}}/8081/g' \
+                            /etc/nginx/templates/rc-template.conf > \
+                            /etc/nginx/sites-available/${SUBDOMAIN}.conf"
 
-            # Enable site
-            sudo ln -sf /etc/nginx/sites-available/${SUBDOMAIN}.conf \
-                       /etc/nginx/sites-enabled/
-            
-            # Reload Nginx with existing wildcard cert
-            sudo nginx -t && sudo systemctl reload nginx
-            EOF
-          env:
-            RC_VERSION: ${{ env.RC_VERSION }}
-            SUBDOMAIN: ${{ env.SUBDOMAIN }}
+          # Enable site
+          sudo ln -sf /etc/nginx/sites-available/${SUBDOMAIN}.conf \
+                     /etc/nginx/sites-enabled/
+
+          # Reload Nginx with existing wildcard cert
+          sudo nginx -t && sudo systemctl reload nginx
+          EOF
+        env:
+          RC_VERSION: ${{ env.RC_VERSION }}
+          SUBDOMAIN: ${{ env.SUBDOMAIN }}
