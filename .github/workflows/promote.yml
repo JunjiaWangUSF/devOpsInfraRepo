@@ -122,6 +122,8 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i keys/2_26_2025.pem ubuntu@ec2-54-88-57-107.compute-1.amazonaws.com << EOF
           # Docker permissions
 
+          aws ecr get-login-password --region us-east-1 | sudo docker login --username AWS --password-stdin 377816764053.dkr.ecr.us-east-1.amazonaws.com
+
           # Pull images first
           docker pull 377816764053.dkr.ecr.us-east-1.amazonaws.com/frontend:${RC_VERSION}
           docker pull 377816764053.dkr.ecr.us-east-1.amazonaws.com/backend:${RC_VERSION}
