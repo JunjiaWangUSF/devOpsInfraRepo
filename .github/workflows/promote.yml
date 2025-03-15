@@ -114,6 +114,9 @@ jobs:
           echo "RC_VERSION=$SANITIZED_VERSION" >> $GITHUB_ENV
           echo "SUBDOMAIN=${SANITIZED_VERSION}.junjiawangusf.live" >> $GITHUB_ENV
 
+      - name: Use private key
+        run: chmod 400 keys/2_26_2025.pem
+
       - name: Deploy to EC2
         run: |
           ssh -o StrictHostKeyChecking=no -i keys/2_26_2025.pem ubuntu@ec2-54-88-57-107.compute-1.amazonaws.com << EOF
