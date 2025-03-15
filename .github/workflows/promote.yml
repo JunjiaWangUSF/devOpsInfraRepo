@@ -66,45 +66,45 @@ jobs:
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Log in to Amazon ECR
-        run: |
-          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+      #   - name: Log in to Amazon ECR
+      #     run: |
+      #       aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
 
-      - name: Build, tag, and push backend image to Amazon ECR
-        env:
-          ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
-          ECR_REPOSITORY: backend
-          IMAGE_TAG: latest
-        run: |
-          cd backend
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+      #   - name: Build, tag, and push backend image to Amazon ECR
+      #     env:
+      #       ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+      #       ECR_REPOSITORY: backend
+      #       IMAGE_TAG: latest
+      #     run: |
+      #       cd backend
+      #       docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+      #       docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
-      - name: Build, tag, and push frontend image to Amazon ECR
-        env:
-          ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
-          ECR_REPOSITORY: frontend
-          IMAGE_TAG: latest
-        run: |
-          cd frontend
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+      #   - name: Build, tag, and push frontend image to Amazon ECR
+      #     env:
+      #       ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+      #       ECR_REPOSITORY: frontend
+      #       IMAGE_TAG: latest
+      #     run: |
+      #       cd frontend
+      #       docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+      #       docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
-      - name: Retag frontend Image
-        run: |
-          docker pull $ECR_REPO:latest
-          docker tag $ECR_REPO:latest $ECR_REPO:${{ env.RC_VERSION }}
-          docker push $ECR_REPO:${{ env.RC_VERSION }}
-        env:
-          ECR_REPO: 377816764053.dkr.ecr.us-east-1.amazonaws.com/frontend
+      #   - name: Retag frontend Image
+      #     run: |
+      #       docker pull $ECR_REPO:latest
+      #       docker tag $ECR_REPO:latest $ECR_REPO:${{ env.RC_VERSION }}
+      #       docker push $ECR_REPO:${{ env.RC_VERSION }}
+      #     env:
+      #       ECR_REPO: 377816764053.dkr.ecr.us-east-1.amazonaws.com/frontend
 
-      - name: Retag backend Image
-        run: |
-          docker pull $ECR_REPO:latest
-          docker tag $ECR_REPO:latest $ECR_REPO:${{ env.RC_VERSION }}
-          docker push $ECR_REPO:${{ env.RC_VERSION }}
-        env:
-          ECR_REPO: 377816764053.dkr.ecr.us-east-1.amazonaws.com/backend
+      #   - name: Retag backend Image
+      #     run: |
+      #       docker pull $ECR_REPO:latest
+      #       docker tag $ECR_REPO:latest $ECR_REPO:${{ env.RC_VERSION }}
+      #       docker push $ECR_REPO:${{ env.RC_VERSION }}
+      #     env:
+      #       ECR_REPO: 377816764053.dkr.ecr.us-east-1.amazonaws.com/backend
 
       - name: Extract and Sanitize RC Version
         run: |
@@ -120,41 +120,51 @@ jobs:
       - name: Deploy to EC2
         run: |
           ssh -o StrictHostKeyChecking=no -i keys/2_26_2025.pem ubuntu@ec2-54-88-57-107.compute-1.amazonaws.com << EOF
-          # Create unique network
-          docker network create rc-${RC_VERSION} || true
+          # Docker permissions
+          sudo usermod -aG docker \$USER
+          newgrp docker
 
-          # Stop and remove existing containers
+          # Pull images first
+          docker pull ${{ secrets.ECR_BACKEND }}:${RC_VERSION}
+          docker pull ${{ secrets.ECR_FRONTEND }}:${RC_VERSION}
+
+          # Network and container management
+          docker network create rc-${RC_VERSION} || true
           docker stop frontend-${RC_VERSION} backend-${RC_VERSION} || true
           docker rm frontend-${RC_VERSION} backend-${RC_VERSION} || true
 
-          # Start containers with unique network
           docker run -d \
+            --restart always \
             --name backend-${RC_VERSION} \
             --network rc-${RC_VERSION} \
             -p 8081:8080 \
             ${{ secrets.ECR_BACKEND }}:${RC_VERSION}
 
           docker run -d \
+            --restart always \
             --name frontend-${RC_VERSION} \
             --network rc-${RC_VERSION} \
             -p 8001:8000 \
             -e REACT_APP_API_URL=http://backend-${RC_VERSION}:8080/api \
             ${{ secrets.ECR_FRONTEND }}:${RC_VERSION}
 
-          # Generate Nginx config from template
+          # Verification
+          echo "=== Running Containers ==="
+          docker ps -a
+          echo "=== Frontend Logs ==="
+          docker logs frontend-${RC_VERSION} || true
+          echo "=== Backend Logs ==="
+          docker logs backend-${RC_VERSION} || true
+
+          # Nginx configuration
           sudo bash -c "sed -e 's/{{SUBDOMAIN}}/${SUBDOMAIN}/g' \
                             -e 's/{{FRONTEND_PORT}}/8001/g' \
                             -e 's/{{BACKEND_PORT}}/8081/g' \
                             /etc/nginx/templates/rc-template.conf > \
                             /etc/nginx/sites-available/${SUBDOMAIN}.conf"
 
-          # Enable site
           sudo ln -sf /etc/nginx/sites-available/${SUBDOMAIN}.conf \
-                     /etc/nginx/sites-enabled/
+                    /etc/nginx/sites-enabled/
 
-          # Reload Nginx with existing wildcard cert
-          sudo nginx -t && sudo systemctl reload nginx
+          sudo /usr/sbin/nginx -t && sudo systemctl reload nginx
           EOF
-        env:
-          RC_VERSION: ${{ env.RC_VERSION }}
-          SUBDOMAIN: ${{ env.SUBDOMAIN }}
