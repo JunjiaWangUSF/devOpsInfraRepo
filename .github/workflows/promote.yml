@@ -100,12 +100,11 @@ jobs:
            -e DB_DATABASE="weightTracker" \
            -e PORT=8000 \
            ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/backend:${{ env.RC_VERSION }}
-           
+
           docker run -d \
             --name frontend-${{ env.RC_VERSION }} \
             --network rc-${{ env.RC_VERSION }} \
             -p 8080:3000 \
-            -e REACT_APP_API_URL=http://backend-${{ env.RC_VERSION }}:8080/api \
             ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/frontend:${{ env.RC_VERSION }}
 
           # Nginx configuration
