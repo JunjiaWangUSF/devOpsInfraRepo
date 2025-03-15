@@ -121,12 +121,10 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no -i keys/2_26_2025.pem ubuntu@ec2-54-88-57-107.compute-1.amazonaws.com << EOF
           # Docker permissions
-          sudo usermod -aG docker \$USER
-          newgrp docker
 
           # Pull images first
-          docker pull ${{ secrets.ECR_BACKEND }}:${RC_VERSION}
-          docker pull ${{ secrets.ECR_FRONTEND }}:${RC_VERSION}
+          docker pull 377816764053.dkr.ecr.us-east-1.amazonaws.com/frontend:${RC_VERSION}
+          docker pull 377816764053.dkr.ecr.us-east-1.amazonaws.com/backend:${RC_VERSION}
 
           # Network and container management
           docker network create rc-${RC_VERSION} || true
