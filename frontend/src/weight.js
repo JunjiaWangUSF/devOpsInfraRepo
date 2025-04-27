@@ -29,6 +29,10 @@ function WeightTracker() {
   const [date, setDate] = useState("");
   const [weights, setWeights] = useState([]);
 
+  if (localStorage.getItem("isLoggedIn") !== "true") {
+    window.location.href = "/login";
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const encodedUsername = encodeURIComponent(username);
@@ -60,26 +64,33 @@ function WeightTracker() {
 
   return (
     <div>
-      <h2>Track Your Weight</h2>
       <form onSubmit={handleSubmit}>
         <input
           type="text"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
+          className="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
           placeholder="Username"
         />
         <input
           type="date"
           value={date}
+          className="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
           onChange={(e) => setDate(e.target.value)}
         />
         <input
           type="number"
           value={weight}
           onChange={(e) => setWeight(e.target.value)}
+          className="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
           placeholder="Weight in lbs"
         />
-        <button type="submit">Add Record</button>
+        <button
+          type="submit"
+          className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        >
+          Add Record
+        </button>
       </form>
       <h2>Weight History</h2>
       {weights.length > 0 ? (
