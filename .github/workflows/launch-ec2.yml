@@ -47,6 +47,46 @@ jobs:
       - name: Wait for EC2 Running
         run: aws ec2 wait instance-status-ok --instance-ids ${{ steps.create-ec2.outputs.instance_id }}
 
+      - name: Get latest QA tag for frontend
+        id: get-frontend-tag
+        run: |
+          QA_TAG=$(aws ecr list-images \
+            --repository-name frontend \
+            --filter "tagStatus=TAGGED" \
+            --query 'imageIds[*].imageTag' \
+            --output text | tr '\t' '\n' | grep '^QA-' | sort | tail -n 1)
+          echo "Latest frontend QA tag: $QA_TAG"
+          echo "FRONTEND_QA_TAG=$QA_TAG" >> $GITHUB_ENV
+
+      - name: Get latest QA tag for authorization
+        id: get-authorization-tag
+
+        run: |
+          QA_TAG=$(aws ecr list-images \
+            --repository-name authorization \
+            --filter "tagStatus=TAGGED" \
+            --query 'imageIds[*].imageTag' \
+            --output text | tr '\t' '\n' | grep '^QA-' | sort | tail -n 1)
+          echo "Latest authorization QA tag: $QA_TAG"
+          echo "AUTHORIZATION_QA_TAG=$QA_TAG" >> $GITHUB_ENV
+
+      - name: Get latest QA tag for backend
+        id: get-backend-tag
+        run: |
+          QA_TAG=$(aws ecr list-images \
+            --repository-name backend \
+            --filter "tagStatus=TAGGED" \
+            --query 'imageIds[*].imageTag' \
+            --output text | tr '\t' '\n' | grep '^QA-' | sort | tail -n 1)
+          echo "Latest backend QA tag: $QA_TAG"
+          echo "BACKEND_QA_TAG=$QA_TAG" >> $GITHUB_ENV
+
+      - name: Replace image tags with latest QA tag
+        run: |
+          sed -i "s/frontend:latest/frontend:${{ env.FRONTEND_QA_TAG }}/g" SmokeTest/docker-compose.yml
+          sed -i "s/backend:latest/backend:${{ env.BACKEND_QA_TAG }}/g" SmokeTest/docker-compose.yml
+          sed -i "s/authorization:latest/authorization:${{ env.AUTHORIZATION_QA_TAG }}/g" SmokeTest/docker-compose.yml
+
       - name: Transfer Docker Compose file and script to EC2 instance
         run: |
           scp -o StrictHostKeyChecking=no -i keys/2_26_2025.pem SmokeTest/docker-compose.yml ubuntu@${{ steps.create-ec2.outputs.public_ip }}:~
@@ -113,3 +153,44 @@ jobs:
         run: |
           aws ec2 terminate-instances --instance-ids ${{ steps.create-ec2.outputs.instance_id }}
           aws ec2 wait instance-terminated --instance-ids ${{ steps.create-ec2.outputs.instance_id }}
+
+      - name: Retag and push QA images as RC
+        if: success() # Only if all previous steps succeeded
+        run: |
+          RC_TAG=RC-$(date +"%Y%m%d-%H%M")
+
+          # Retag and push for frontend
+          aws ecr batch-get-image \
+            --repository-name frontend \
+            --image-ids imageTag=${{ env.FRONTEND_QA_TAG }} \
+            --query 'images[].imageManifest' \
+            --output text > frontend-manifest.json
+
+          aws ecr put-image \
+            --repository-name frontend \
+            --image-tag $RC_TAG \
+            --image-manifest file://frontend-manifest.json
+
+          # Retag and push for backend
+          aws ecr batch-get-image \
+            --repository-name backend \
+            --image-ids imageTag=${{ env.BACKEND_QA_TAG }} \
+            --query 'images[].imageManifest' \
+            --output text > backend-manifest.json
+
+          aws ecr put-image \
+            --repository-name backend \
+            --image-tag $RC_TAG \
+            --image-manifest file://backend-manifest.json
+
+          # Retag and push for authorization
+          aws ecr batch-get-image \
+            --repository-name authorization \
+            --image-ids imageTag=${{ env.AUTHORIZATION_QA_TAG }} \
+            --query 'images[].imageManifest' \
+            --output text > authorization-manifest.json
+
+          aws ecr put-image \
+            --repository-name authorization \
+            --image-tag $RC_TAG \
+            --image-manifest file://authorization-manifest.json

@@ -16,3 +16,13 @@ services:
       DB_PASSWORD: "password"
       DB_DATABASE: "weightTracker"
       PORT: "8000"
+  authorization:
+    image: 377816764053.dkr.ecr.us-east-1.amazonaws.com/authorization:latest
+    ports:
+      - "8001:8001"
+    environment:
+      DB_HOST: "database-1.cmkrqsxfvwur.us-east-1.rds.amazonaws.com"
+      DB_USER: "admin"
+      DB_PASSWORD: "password"
+      DB_DATABASE: "weightTracker"
+      PORT: "8000"
