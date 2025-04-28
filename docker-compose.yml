@@ -14,7 +14,7 @@ services:
       DB_HOST: ${DB_HOST}
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
-      DB_DATABASE: ${DB_DATABASE_WEIGHT}
+      DB_DATABASE: ${DB_DATABASE}
       DB_PORT: ${DB_PORT}
     depends_on:
       - mysql
@@ -27,7 +27,7 @@ services:
       DB_HOST: ${DB_HOST}
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
-      DB_DATABASE: ${DB_DATABASE_WEIGHT}
+      DB_DATABASE: ${DB_DATABASE}
       DB_PORT: ${DB_PORT}
     depends_on:
       - mysql
