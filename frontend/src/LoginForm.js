@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { data } from "react-router-dom";
 import axios from "axios";
 
-let backend = "http://localhost:5000";
+let backend = "http://localhost:8001";
 const LoginForm = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -25,7 +25,7 @@ const LoginForm = () => {
     console.log("hi!!" + backend);
     try {
       const res = await axios.post(
-        `${backend}/auth/login`,
+        `${backend}/login`,
         { email, password },
         { withCredentials: true }
       );
@@ -33,7 +33,7 @@ const LoginForm = () => {
       localStorage.setItem("isLoggedIn", true);
       if (res.status === 200) {
         const data = res.data;
-        window.location.href = "/travel-advisor";
+        window.location.href = "/";
         // Handle successful login (e.g., save token, redirect)
       } else {
         alert(data.message || "An error occurred. Please try again later.");

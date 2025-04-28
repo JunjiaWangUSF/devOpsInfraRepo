@@ -14,7 +14,20 @@ services:
       DB_HOST: ${DB_HOST}
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
-      DB_DATABASE: ${DB_DATABASE}
+      DB_DATABASE: ${DB_DATABASE_WEIGHT}
+      DB_PORT: ${DB_PORT}
+    depends_on:
+      - mysql
+  authorization:
+    build: ./authorization
+    image: my-authorization-image:latest
+    ports:
+      - "8001:8001"
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_DATABASE: ${DB_DATABASE_WEIGHT}
       DB_PORT: ${DB_PORT}
     depends_on:
       - mysql
@@ -28,7 +41,16 @@ services:
     volumes:
       - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-uroot",
+          "-p${MYSQL_ROOT_PASSWORD}",
+        ]
       interval: 10s
       timeout: 10s
       retries: 5

@@ -15,13 +15,13 @@ const SignUpForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     let response = await axios.post(
-      "http://localhost:8000/auth/register",
+      "http://localhost:8001/register",
       formData,
       { withCredentials: true }
     );
     if (response.status === 400) {
       alert("User alreay registered");
-    } else if (response.status === 200) {
+    } else if (response.status === 201) {
       window.location.href = "/login";
     }
   };

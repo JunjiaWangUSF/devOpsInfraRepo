@@ -20,6 +20,14 @@ const pool = mysql.createPool({
   port: process.env.DB_PORT || 3306, // Default to 3306 if not specified
 });
 
+console.log(
+  "Backend Database connection pool created. host:",
+  process.env.DB_HOST
+);
+console.log(
+  "Backend Database connection database is: ",
+  process.env.DB_DATABASE
+);
 app.post("/weight", (req, res) => {
   const { username, weight, date } = req.body;
   console.log(username, weight, date);
