@@ -1,4 +1,4 @@
-name: Nightly Build
+name: push-ecr
 
 on:
   workflow_dispatch:
