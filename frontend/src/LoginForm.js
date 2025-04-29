@@ -2,7 +2,10 @@ import React, { useState } from "react";
 import { data } from "react-router-dom";
 import axios from "axios";
 
-let backend = "http://localhost:8001";
+const apiBaseUrl = process.env.API_BASE_URL;
+const backendBaseUrl = process.env.BACKEND_BASE_URL;
+
+console.log("API Base URL:", apiBaseUrl);
 const LoginForm = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -22,10 +25,10 @@ const LoginForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const { email, password } = formData;
-    console.log("hi!!" + backend);
+
     try {
       const res = await axios.post(
-        `/login`,
+        `${apiBaseUrl}/login`,
         { email, password },
         { withCredentials: true }
       );

@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
+
+const apiBaseUrl = process.env.API_BASE_URL;
+
 const SignUpForm = () => {
   const [formData, setFormData] = useState({
     name: "",
@@ -14,7 +17,7 @@ const SignUpForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    let response = await axios.post("/register", formData, {
+    let response = await axios.post(`${apiBaseUrl}/register`, formData, {
       withCredentials: true,
     });
     if (response.status === 400) {

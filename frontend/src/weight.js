@@ -22,6 +22,8 @@ ChartJS.register(
   Tooltip,
   Legend
 );
+const apiBaseUrl = process.env.API_BASE_URL;
+const backendBaseUrl = process.env.BACKEND_BASE_URL;
 
 function WeightTracker() {
   const [username, setUsername] = useState("");
@@ -36,7 +38,7 @@ function WeightTracker() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const encodedUsername = encodeURIComponent(username);
-    await axios.post("/weight", {
+    await axios.post(`${backendBaseUrl}/weight`, {
       username,
       weight,
       date,
@@ -45,7 +47,9 @@ function WeightTracker() {
   };
 
   const fetchWeights = async (encodedUsername) => {
-    const response = await axios.get(`/weights/${encodedUsername}`);
+    const response = await axios.get(
+      `${backendBaseUrl}/weights/${encodedUsername}`
+    );
     setWeights(response.data);
   };
 
