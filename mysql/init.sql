@@ -18,3 +18,5 @@ CREATE TABLE IF NOT EXISTS users (
 -- Inserting dummy data
 INSERT INTO weights (username, weight, date) VALUES
 ('test', 65.0, '2023-01-01');
+
+
