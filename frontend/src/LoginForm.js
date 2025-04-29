@@ -25,7 +25,7 @@ const LoginForm = () => {
     console.log("hi!!" + backend);
     try {
       const res = await axios.post(
-        `/api/login`,
+        `/login`,
         { email, password },
         { withCredentials: true }
       );

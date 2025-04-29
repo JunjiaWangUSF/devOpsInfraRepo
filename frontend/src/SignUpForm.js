@@ -14,7 +14,7 @@ const SignUpForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    let response = await axios.post("/api/register", formData, {
+    let response = await axios.post("/register", formData, {
       withCredentials: true,
     });
     if (response.status === 400) {
