@@ -29,9 +29,9 @@ function WeightTracker() {
   const [date, setDate] = useState("");
   const [weights, setWeights] = useState([]);
 
-  if (localStorage.getItem("isLoggedIn") !== "true") {
-    window.location.href = "/login";
-  }
+  // if (localStorage.getItem("isLoggedIn") !== "true") {
+  //   window.location.href = "/login";
+  // }
 
   const handleSubmit = async (e) => {
     e.preventDefault();

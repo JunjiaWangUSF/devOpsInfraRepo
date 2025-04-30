@@ -11,33 +11,35 @@ const port = process.env.PORT || 8001;
 
 // Enhanced CORS configuration for Blue/Green deployments
 const allowedOrigins = [
-  "http://localhost:3000",
-  // Add your production domains here
-  process.env.FRONTEND_URL,
-  // Include pattern for your ELB (current and future deployments)
-  /\.us-east-1\.elb\.amazonaws\.com$/,
-  // Add any other domains you need
+  /^https:\/\/(.*\.)?junjiawangusf\.live$/, // All subdomains (uat-blue, uat-green, prod, etc.)
+  "https://junjiawangusf.live",
+  "https://uat-blue.junjiawangusf.live",
+  "https://uat-green.junjiawangusf.live",
+  "https://ga-blue.junjiawangusf.live",
+  "https://ga-green.junjiawangusf.live",
+  // Root domain
 ];
 
 const corsOptions = {
   origin: (origin, callback) => {
-    // Allow requests with no origin (like mobile apps or curl requests)
+    // Allow requests with no origin (e.g., mobile apps, curl)
     if (!origin) return callback(null, true);
 
-    if (
-      allowedOrigins.some((allowedOrigin) => {
-        if (typeof allowedOrigin === "string") {
-          return origin === allowedOrigin;
-        } else if (allowedOrigin instanceof RegExp) {
-          return allowedOrigin.test(origin);
-        }
-        return false;
-      })
-    ) {
-      return callback(null, true);
-    }
+    const isAllowed = allowedOrigins.some((allowedOrigin) => {
+      if (typeof allowedOrigin === "string") {
+        return origin === allowedOrigin;
+      } else if (allowedOrigin instanceof RegExp) {
+        return allowedOrigin.test(origin);
+      }
+      return false;
+    });
 
-    return callback(new Error("Not allowed by CORS"));
+    if (isAllowed) {
+      return callback(null, true);
+    } else {
+      console.log(`Blocked by CORS: ${origin}`);
+      return callback(new Error("Not allowed by CORS"));
+    }
   },
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
   credentials: true,
@@ -48,6 +50,7 @@ const corsOptions = {
 
 // Apply CORS middleware
 app.use(cors(corsOptions));
+app.options("*", cors(corsOptions)); // Explicit preflight for all routes
 
 // Enhanced body parser with error handling
 app.use(
