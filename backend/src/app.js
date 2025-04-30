@@ -64,7 +64,7 @@ app.get("/api/health", (req, res) => {
   res.status(200).json({
     status: "healthy",
     timestamp: new Date().toISOString(),
-    dbConnection: pool.pool.config.connectionConfig.host,
+    dbConnection: pool.config.connectionConfig.host,
   });
 });
 
