@@ -28,16 +28,6 @@ function WeightTracker() {
   const [weight, setWeight] = useState("");
   const [date, setDate] = useState("");
   const [weights, setWeights] = useState([]);
-  const [apiBaseUrl, setApiBaseUrl] = useState("");
-  const [backendBaseUrl, setBackendBaseUrl] = useState("");
-  useEffect(() => {
-    fetch("/config.json")
-      .then((res) => res.json())
-      .then((config) => {
-        setApiBaseUrl(config.REACT_APP_API_BASE_URL);
-        setBackendBaseUrl(config.REACT_APP_BACKEND_BASE_URL);
-      });
-  }, []);
 
   if (localStorage.getItem("isLoggedIn") !== "true") {
     window.location.href = "/login";

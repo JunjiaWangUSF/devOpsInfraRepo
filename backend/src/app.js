@@ -28,7 +28,7 @@ console.log(
   "Backend Database connection database is: ",
   process.env.DB_DATABASE
 );
-app.post("/weight", (req, res) => {
+app.post("/api/weight", (req, res) => {
   const { username, weight, date } = req.body;
   console.log(username, weight, date);
   try {
@@ -46,7 +46,7 @@ app.post("/weight", (req, res) => {
   }
 });
 
-app.get("/weights/:username", (req, res) => {
+app.get("/api/weights/:username", (req, res) => {
   const username = decodeURIComponent(req.params.username);
   const sql = `SELECT * FROM weights WHERE username = ? ORDER BY date ASC`;
   pool.query(sql, [username], (err, results) => {
@@ -58,7 +58,7 @@ app.get("/weights/:username", (req, res) => {
   });
 });
 
-app.get("/weights/test", (req, res) => {
+app.get("/api/weights/test", (req, res) => {
   const sql = `SELECT * FROM weights`;
   pool.query(sql, (err, results) => {
     if (err) {

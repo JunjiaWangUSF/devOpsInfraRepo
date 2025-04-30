@@ -2,22 +2,7 @@ import React, { useState, useEffect } from "react";
 import { data } from "react-router-dom";
 import axios from "axios";
 
-const apiBaseUrl = "http://authorization-service.uat.svc.cluster.local:8001";
-const backendBaseUrl = "http://backend-service.uat.svc.cluster.local:8000";
-
-console.log("API Base URL:", apiBaseUrl);
 const LoginForm = () => {
-  const [apiBaseUrl, setApiBaseUrl] = useState("");
-  const [backendBaseUrl, setBackendBaseUrl] = useState("");
-
-  useEffect(() => {
-    fetch("/config.json")
-      .then((res) => res.json())
-      .then((config) => {
-        setApiBaseUrl(config.REACT_APP_API_BASE_URL);
-        setBackendBaseUrl(config.REACT_APP_BACKEND_BASE_URL);
-      });
-  }, []);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const [formData, setFormData] = useState({

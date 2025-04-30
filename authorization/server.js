@@ -96,7 +96,7 @@ console.log(
 );
 
 // Health check endpoint
-app.get("/health", (req, res) => {
+app.get("/api/auth/health", (req, res) => {
   res.status(200).json({
     status: "healthy",
     timestamp: new Date().toISOString(),
@@ -105,7 +105,7 @@ app.get("/health", (req, res) => {
 });
 
 // Registration endpoint
-app.post("/register", async (req, res) => {
+app.post("/api/register", async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -140,7 +140,7 @@ app.post("/register", async (req, res) => {
 });
 
 // Login endpoint
-app.post("/login", async (req, res) => {
+app.post("/api/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
