@@ -1,7 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-
-const apiBaseUrl = process.env.API_BASE_URL;
 
 const SignUpForm = () => {
   const [formData, setFormData] = useState({
@@ -9,7 +7,17 @@ const SignUpForm = () => {
     email: "",
     password: "",
   });
+  const [apiBaseUrl, setApiBaseUrl] = useState("");
+  const [backendBaseUrl, setBackendBaseUrl] = useState("");
 
+  useEffect(() => {
+    fetch("/config.json")
+      .then((res) => res.json())
+      .then((config) => {
+        setApiBaseUrl(config.REACT_APP_API_BASE_URL);
+        setBackendBaseUrl(config.REACT_APP_BACKEND_BASE_URL);
+      });
+  }, []);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });

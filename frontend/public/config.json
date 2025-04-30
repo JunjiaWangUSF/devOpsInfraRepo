@@ -1,0 +1,4 @@
+{
+  "REACT_APP_API_BASE_URL": "http://authorization-service.uat.svc.cluster.local:8001",
+  "REACT_APP_BACKEND_BASE_URL": "http://backend-service.uat.svc.cluster.local:8000"
+}
