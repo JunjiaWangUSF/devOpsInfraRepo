@@ -46,7 +46,7 @@ function WeightTracker() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const encodedUsername = encodeURIComponent(username);
-    await axios.post(`${backendBaseUrl}/weight`, {
+    await axios.post(`/api/backend/weight`, {
       username,
       weight,
       date,

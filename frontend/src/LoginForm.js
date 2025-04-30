@@ -39,7 +39,7 @@ const LoginForm = () => {
 
     try {
       const res = await axios.post(
-        `${apiBaseUrl}/login`,
+        `/api/auth/login`,
         { email, password },
         { withCredentials: true }
       );
