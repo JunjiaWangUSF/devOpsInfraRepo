@@ -58,6 +58,14 @@ app.get("/api/weights/:username", (req, res) => {
   });
 });
 
+app.get("/", (req, res) => {
+  res.status(200).json({
+    status: "healthy",
+    timestamp: new Date().toISOString(),
+    dbConnection: pool.pool.config.connectionConfig.host,
+  });
+});
+
 app.get("/api/weights/test", (req, res) => {
   const sql = `SELECT * FROM weights`;
   pool.query(sql, (err, results) => {
