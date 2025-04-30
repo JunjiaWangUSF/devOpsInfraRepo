@@ -55,9 +55,7 @@ function WeightTracker() {
   };
 
   const fetchWeights = async (encodedUsername) => {
-    const response = await axios.get(
-      `${backendBaseUrl}/weights/${encodedUsername}`
-    );
+    const response = await axios.get(`/api/weights/${encodedUsername}`);
     setWeights(response.data);
   };
 
