@@ -66,6 +66,14 @@ app.get("/", (req, res) => {
   });
 });
 
+app.get("/api", (req, res) => {
+  res.status(200).json({
+    status: "healthy",
+    timestamp: new Date().toISOString(),
+    dbConnection: pool.pool.config.connectionConfig.host,
+  });
+});
+
 app.get("/api/weights/test", (req, res) => {
   const sql = `SELECT * FROM weights`;
   pool.query(sql, (err, results) => {
@@ -80,10 +88,10 @@ app.get("/api/weights/test", (req, res) => {
 
 let server;
 // Check if the module is being required elsewhere or run directly
-if (import.meta.url === `file://${process.argv[1]}`) {
-  server = app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
-  });
-}
+//if (import.meta.url === `file://${process.argv[1]}`) {
+server = app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});
+//}
 
 export { app, server, pool };
