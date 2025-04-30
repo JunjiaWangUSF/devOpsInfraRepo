@@ -9,48 +9,22 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 8001;
 
-// Enhanced CORS configuration for Blue/Green deployments
 const allowedOrigins = [
-  /^https:\/\/(.*\.)?junjiawangusf\.live$/, // All subdomains (uat-blue, uat-green, prod, etc.)
+  "https://wwww.junjiawangusf.live",
   "https://junjiawangusf.live",
   "https://uat-blue.junjiawangusf.live",
   "https://uat-green.junjiawangusf.live",
   "https://ga-blue.junjiawangusf.live",
   "https://ga-green.junjiawangusf.live",
-  // Root domain
+  // Add other trusted domains
 ];
 
-const corsOptions = {
-  origin: (origin, callback) => {
-    // Allow requests with no origin (e.g., mobile apps, curl)
-    if (!origin) return callback(null, true);
-
-    const isAllowed = allowedOrigins.some((allowedOrigin) => {
-      if (typeof allowedOrigin === "string") {
-        return origin === allowedOrigin;
-      } else if (allowedOrigin instanceof RegExp) {
-        return allowedOrigin.test(origin);
-      }
-      return false;
-    });
-
-    if (isAllowed) {
-      return callback(null, true);
-    } else {
-      console.log(`Blocked by CORS: ${origin}`);
-      return callback(new Error("Not allowed by CORS"));
-    }
-  },
-  methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
-  credentials: true,
-  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
-  preflightContinue: false,
-  optionsSuccessStatus: 204,
-};
-
-// Apply CORS middleware
-app.use(cors(corsOptions));
-app.options("*", cors(corsOptions)); // Explicit preflight for all routes
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true, // Enable cookies/auth headers
+  })
+);
 
 // Enhanced body parser with error handling
 app.use(
@@ -106,7 +80,7 @@ app.get("/", (req, res) => {
   });
 });
 // Health check endpoint
-app.get("/api/auth", (req, res) => {
+app.get("/api/auth/health", (req, res) => {
   res.status(200).json({
     status: "healthy",
     timestamp: new Date().toISOString(),
@@ -204,5 +178,4 @@ app.use((err, req, res, next) => {
 // Start server
 app.listen(port, () => {
   console.log(`Authorization service running on port ${port}`);
-  console.log(`Allowed CORS origins: ${allowedOrigins.join(", ")}`);
 });
