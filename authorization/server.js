@@ -72,13 +72,6 @@ console.log(
   process.env.DB_DATABASE
 );
 
-app.get("/", (req, res) => {
-  res.status(200).json({
-    status: "healthy",
-    timestamp: new Date().toISOString(),
-    dbConnection: pool.pool.config.connectionConfig.host,
-  });
-});
 // Health check endpoint
 app.get("/api/auth/health", (req, res) => {
   res.status(200).json({

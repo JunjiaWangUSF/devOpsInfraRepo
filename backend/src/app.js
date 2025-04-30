@@ -13,11 +13,13 @@ app.use(express.json());
 // Setup database connection from environment variables
 const pool = mysql.createPool({
   connectionLimit: 10,
-  host: process.env.DB_HOST, // Environment variable for database host
-  user: process.env.DB_USER, // Environment variable for database user
-  password: process.env.DB_PASSWORD, // Environment variable for database password
-  database: process.env.DB_DATABASE, // Environment variable for database name
-  port: process.env.DB_PORT || 3306, // Default to 3306 if not specified
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_DATABASE,
+  port: process.env.DB_PORT || 3306,
+  waitForConnections: true,
+  queueLimit: 0,
 });
 
 console.log(
@@ -55,14 +57,6 @@ app.get("/api/weights/:username", (req, res) => {
       return;
     }
     res.json(results);
-  });
-});
-
-app.get("/", (req, res) => {
-  res.status(200).json({
-    status: "healthy",
-    timestamp: new Date().toISOString(),
-    dbConnection: pool.pool.config.connectionConfig.host,
   });
 });
 
