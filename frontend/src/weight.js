@@ -92,7 +92,7 @@ function WeightTracker() {
           Add Record
         </button>
       </form>
-      <h2>Weight History</h2>
+      <h2 style={{ color: "red" }}>Weight History</h2>
       {weights.length > 0 ? (
         <Line data={data} />
       ) : (
