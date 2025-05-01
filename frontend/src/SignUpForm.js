@@ -30,7 +30,7 @@ const SignUpForm = () => {
     });
     if (response.status === 400) {
       alert("User alreay registered");
-    } else if (response.status === 201) {
+    } else {
       window.location.href = "/login";
     }
   };

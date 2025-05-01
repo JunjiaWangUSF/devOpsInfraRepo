@@ -31,7 +31,6 @@ const LoginForm = () => {
 
       localStorage.setItem("isLoggedIn", true);
       if (res.status === 200) {
-        const data = res.data;
         window.location.href = "/";
         // Handle successful login (e.g., save token, redirect)
       } else {
