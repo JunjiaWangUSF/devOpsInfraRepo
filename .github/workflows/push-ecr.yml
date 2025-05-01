@@ -29,7 +29,7 @@ jobs:
 
         run: |
           cd backend
-          IMAGE_TAG=QA-$(date +"%Y%m%d-%H%M")
+          IMAGE_TAG=RC-$(date +"%Y%m%d-%H%M")
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
@@ -40,7 +40,7 @@ jobs:
 
         run: |
           cd authorization
-          IMAGE_TAG=QA-$(date +"%Y%m%d-%H%M")
+          IMAGE_TAG=RC-$(date +"%Y%m%d-%H%M")
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
@@ -50,6 +50,6 @@ jobs:
           ECR_REPOSITORY: frontend
         run: |
           cd frontend
-          IMAGE_TAG=QA-$(date +"%Y%m%d-%H%M")
+          IMAGE_TAG=RC-$(date +"%Y%m%d-%H%M")
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
